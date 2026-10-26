@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Home</title>
+<style>
+  :root{--bg:#0b0d14;--panel:#151926;--panel2:#1c2133;--text:#f1f3f9;--mute:#8b93aa;--accent:#7c5cff}
+  *{box-sizing:border-box;margin:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(900px 500px at 85% -10%, rgba(124,92,255,.28), transparent 60%),
+      radial-gradient(700px 500px at -10% 110%, rgba(34,211,238,.18), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding:clamp(20px,4vw,64px);overflow-x:hidden;
+  }
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:clamp(20px,3vw,40px)}
+  .clock{font-size:clamp(56px,9vw,132px);font-weight:200;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .clock small{font-size:.38em;color:var(--mute);margin-left:.15em;font-weight:300}
+  .date{color:var(--mute);font-size:clamp(16px,2vw,28px);margin-top:8px}
+  .right{display:flex;flex-direction:column;align-items:flex-end;gap:14px;text-align:right}
+  .greet{font-size:clamp(16px,2vw,28px);color:var(--mute)}
+  .greet b{display:block;color:var(--text);font-weight:500;font-size:1.25em}
+  .weather{background:var(--panel);border-radius:20px;padding:14px 22px;display:flex;gap:16px;align-items:center}
+  .weather .big{font-size:clamp(30px,3.4vw,52px);font-weight:300}
+  .weather .sub{color:var(--mute);font-size:clamp(13px,1.3vw,19px);text-align:left;line-height:1.35}
+  .world{display:flex;gap:clamp(14px,2vw,30px);flex-wrap:wrap;margin-bottom:clamp(20px,3vw,36px);color:var(--mute)}
+  .world div{font-size:clamp(13px,1.3vw,19px)}
+  .world b{display:block;color:var(--text);font-size:1.6em;font-weight:300;font-variant-numeric:tabular-nums}
+  .search{display:flex;gap:12px;margin-bottom:clamp(20px,3vw,36px)}
+  .search input{flex:1;background:var(--panel);border:2px solid transparent;color:var(--text);font-size:clamp(18px,2vw,28px);padding:18px 24px;border-radius:18px;outline:none}
+  .search input:focus{border-color:var(--accent)}
+  h2{font-size:clamp(14px,1.4vw,20px);text-transform:uppercase;letter-spacing:.14em;color:var(--mute);font-weight:600;margin:0 0 14px 4px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(150px,17vw,260px),1fr));gap:clamp(12px,1.6vw,24px);margin-bottom:clamp(22px,3.5vw,44px)}
+  .tile{display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:16/10;padding:18px 20px;border-radius:20px;text-decoration:none;color:#fff;position:relative;overflow:hidden;cursor:pointer;background:var(--c,#333);transition:transform .15s ease,box-shadow .15s ease;outline:none;border:0;font:inherit;text-align:left}
+  .tile::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(0,0,0,.35))}
+  .tile .glyph{position:absolute;top:14px;left:18px;font-size:clamp(28px,3.2vw,48px);font-weight:800;opacity:.95;z-index:1}
+  .tile .name{position:relative;z-index:1;font-size:clamp(16px,1.6vw,24px);font-weight:600}
+  .tile:hover,.tile:focus{transform:scale(1.07);box-shadow:0 0 0 4px #fff,0 18px 40px rgba(0,0,0,.55);z-index:2}
+  .tile.add{background:var(--panel);border:2px dashed #3a4260;align-items:center;justify-content:center;color:var(--mute)}
+  .tile.add::before{display:none}
+  .tile.add .name{font-size:clamp(28px,3vw,44px)}
+  .tile .x{position:absolute;top:10px;right:10px;z-index:3;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:999px;width:34px;height:34px;font-size:18px;display:none;cursor:pointer}
+  body.editing .tile:not(.add) .x{display:block}
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;color:var(--mute);font-size:clamp(13px,1.2vw,18px)}
+  .btn{background:var(--panel2);color:var(--text);border:2px solid transparent;border-radius:14px;padding:12px 20px;font-size:inherit;cursor:pointer;outline:none}
+  .btn:focus,.btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent)}
+  dialog{background:var(--panel);color:var(--text);border:0;border-radius:24px;padding:32px;width:min(560px,92vw)}
+  dialog::backdrop{background:rgba(0,0,0,.7)}
+  dialog label{display:block;color:var(--mute);margin:14px 0 6px;font-size:15px}
+  dialog input{width:100%;background:var(--panel2);border:2px solid transparent;color:var(--text);font-size:20px;padding:14px 16px;border-radius:12px;outline:none}
+  dialog input:focus{border-color:var(--accent)}
+  dialog .row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px}
+  kbd{background:var(--panel2);border-radius:6px;padding:2px 8px;color:var(--text)}
+  #saver{position:fixed;inset:0;background:#000;display:none;z-index:50;overflow:hidden}
+  #saver.on{display:block}
+  #saver .sc{position:absolute;left:10%;top:30%;text-align:center;transition:left 60s linear,top 60s linear}
+  #saver .t{font-size:clamp(72px,14vw,220px);font-weight:200;color:#cfd4e6;font-variant-numeric:tabular-nums}
+  #saver .d{font-size:clamp(18px,2.4vw,36px);color:#6e7692}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="clock"><span id="hm">--:--</span><small id="ss"></small></div>
+    <div class="date" id="date"></div>
+  </div>
+  <div class="right">
+    <div class="greet"><span id="hello">Hello</span><b>What are we watching?</b></div>
+    <div class="weather" id="weather"><span class="big" id="wTemp">--°</span><span class="sub" id="wSub">Loading weather…</span></div>
+  </div>
+</header>
+
+<div class="world" id="world"></div>
+
+<form class="search" id="searchForm">
+  <input id="q" type="text" placeholder="Search the web or YouTube…  (prefix with  yt  for YouTube)" autocomplete="off">
+  <button class="btn primary" type="submit">Search</button>
+</form>
+
+<h2>Apps</h2>
+<div class="grid" id="apps"></div>
+
+<h2>Quick links</h2>
+<div class="grid" id="links"></div>
+
+<div class="bar">
+  <button class="btn" id="editBtn">Edit tiles</button>
+  <button class="btn" id="fmtBtn">12h / 24h</button>
+  <button class="btn" id="resetBtn">Reset</button>
+  <span>Move with <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> · open with <kbd>OK</kbd> · no ads, no recommendations.</span>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="addForm">
+    <h2 style="margin-bottom:0">Add a tile</h2>
+    <label for="nName">Name</label><input id="nName" required maxlength="20">
+    <label for="nUrl">Address</label><input id="nUrl" required placeholder="example.com">
+    <div class="row">
+      <button class="btn" type="button" id="cancelAdd">Cancel</button>
+      <button class="btn primary" type="submit">Add</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="saver"><div class="sc" id="sc"><div class="t" id="st">--:--</div><div class="d" id="sd"></div></div></div>
+
+<script>
+/* ===== Settings you can change ===== */
+var CITY = {name:"Bucharest", lat:44.4268, lon:26.1025, tz:"Europe/Bucharest"};
+var WORLD = [
+  {n:"London",   tz:"Europe/London"},
+  {n:"New York", tz:"America/New_York"},
+  {n:"Tokyo",    tz:"Asia/Tokyo"}
+];
+var IDLE_SECONDS = 90;   // screensaver clock after this long with no key press
+
+var DEFAULTS = {
+  apps: [
+    {n:"YouTube", u:"https://www.youtube.com/tv", c:"#d6281f"},
+    {n:"Netflix", u:"https://www.netflix.com", c:"#b20710"},
+    {n:"Prime Video", u:"https://www.primevideo.com", c:"#0a7cc2"},
+    {n:"Disney+", u:"https://www.disneyplus.com", c:"#1b3a8c"},
+    {n:"Max", u:"https://www.max.com", c:"#4b2bd6"},
+    {n:"Twitch", u:"https://www.twitch.tv", c:"#7d3fe8"},
+    {n:"Spotify", u:"https://open.spotify.com", c:"#169c46"},
+    {n:"Plex", u:"https://app.plex.tv", c:"#c88a00"}
+  ],
+  links: [
+    {n:"News", u:"https://news.google.com", c:"#3d4a6b"},
+    {n:"Sports", u:"https://www.espn.com", c:"#a4262c"},
+    {n:"Maps", u:"https://maps.google.com", c:"#2f7d5b"},
+    {n:"PlayStation", u:"https://www.playstation.com", c:"#1f4aa8"}
+  ]
+};
+
+/* ===== State ===== */
+var state, h24 = true;
+try { state = JSON.parse(localStorage.getItem("tvhome")); } catch(e){}
+try { var f = localStorage.getItem("tvhome24"); if(f !== null) h24 = f === "1"; } catch(e){}
+if(!state || !state.apps) state = JSON.parse(JSON.stringify(DEFAULTS));
+function save(){ try{ localStorage.setItem("tvhome", JSON.stringify(state)); }catch(e){} }
+var COLORS = ["#d6281f","#0a7cc2","#4b2bd6","#169c46","#c88a00","#2a6f97","#a4262c","#2f7d5b","#7d3fe8"];
+function norm(u){ return /^https?:\/\//i.test(u) ? u : "https://" + u; }
+function $(id){ return document.getElementById(id); }
+
+/* ===== Tiles ===== */
+function render(){
+  ["apps","links"].forEach(function(key){
+    var el = $(key); el.innerHTML = "";
+    state[key].forEach(function(t,i){
+      var a = document.createElement("a");
+      a.className = "tile"; a.href = t.u; a.style.setProperty("--c", t.c || COLORS[i % COLORS.length]);
+      a.innerHTML = '<span class="glyph"></span><span class="name"></span><button class="x" tabindex="-1" aria-label="Remove">✕</button>';
+      a.querySelector(".glyph").textContent = t.n.trim().charAt(0).toUpperCase();
+      a.querySelector(".name").textContent = t.n;
+      a.querySelector(".x").onclick = function(e){ e.preventDefault(); e.stopPropagation(); state[key].splice(i,1); save(); render(); };
+      a.addEventListener("click", function(e){ if(document.body.classList.contains("editing")) e.preventDefault(); });
+      el.appendChild(a);
+    });
+    var add = document.createElement("button");
+    add.className = "tile add"; add.innerHTML = '<span class="name">+</span>'; add.setAttribute("aria-label","Add tile");
+    add.onclick = function(){ openAdd(key); };
+    el.appendChild(add);
+  });
+}
+var addTarget = "apps", dlg = $("dlg");
+function openAdd(k){ addTarget = k; $("addForm").reset(); dlg.showModal(); $("nName").focus(); }
+$("cancelAdd").onclick = function(){ dlg.close(); };
+$("addForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var n = $("nName").value.trim(), u = norm($("nUrl").value.trim());
+  if(!n) return;
+  state[addTarget].push({n:n, u:u, c:COLORS[Math.floor(Math.random()*COLORS.length)]});
+  save(); dlg.close(); render();
+});
+$("editBtn").onclick = function(){ document.body.classList.toggle("editing"); };
+$("resetBtn").onclick = function(){ state = JSON.parse(JSON.stringify(DEFAULTS)); save(); render(); };
+$("fmtBtn").onclick = function(){ h24 = !h24; try{ localStorage.setItem("tvhome24", h24 ? "1":"0"); }catch(e){} tick(); };
+
+/* ===== Search ===== */
+$("searchForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var q = $("q").value.trim(); if(!q) return;
+  var yt = /^yt\s+/i.test(q);
+  var url = yt ? "https://www.youtube.com/results?search_query=" + encodeURIComponent(q.replace(/^yt\s+/i,""))
+               : "https://duckduckgo.com/?q=" + encodeURIComponent(q);
+  location.href = url;
+});
+
+/* ===== Clock, date, world clocks ===== */
+function fmt(d, tz, opts){
+  try { return new Intl.DateTimeFormat([], Object.assign({timeZone: tz}, opts)).format(d); }
+  catch(e){ return d.toLocaleTimeString(); }
+}
+function tick(){
+  var d = new Date();
+  var hm = fmt(d, CITY.tz, {hour:"2-digit", minute:"2-digit", hour12:!h24});
+  $("hm").textContent = hm;
+  $("ss").textContent = fmt(d, CITY.tz, {second:"2-digit"});
+  var dt = fmt(d, CITY.tz, {weekday:"long", day:"numeric", month:"long"});
+  $("date").textContent = dt + " · " + CITY.name;
+  var h = parseInt(fmt(d, CITY.tz, {hour:"2-digit", hour12:false}), 10) % 24;
+  $("hello").textContent = h<5 ? "Late night" : h<12 ? "Good morning" : h<18 ? "Good afternoon" : "Good evening";
+  var w = $("world"); if(!w.children.length){
+    WORLD.forEach(function(z){ var el = document.createElement("div"); el.innerHTML = '<span></span><b></b>'; w.appendChild(el); });
+  }
+  WORLD.forEach(function(z,i){
+    w.children[i].firstChild.textContent = z.n;
+    w.children[i].lastChild.textContent = fmt(d, z.tz, {hour:"2-digit", minute:"2-digit", hour12:!h24});
+  });
+  $("st").textContent = hm; $("sd").textContent = dt;
+}
+tick(); setInterval(tick, 1000);
+
+/* ===== Weather (Open-Meteo, no key) ===== */
+var WMO = {0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Overcast",45:"Fog",48:"Fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",
+  61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Showers",81:"Showers",82:"Heavy showers",95:"Thunderstorm",96:"Thunderstorm",99:"Thunderstorm"};
+function weather(){
+  var url = "https://api.open-meteo.com/v1/forecast?latitude=" + CITY.lat + "&longitude=" + CITY.lon +
+    "&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=" + encodeURIComponent(CITY.tz);
+  fetch(url).then(function(r){ return r.json(); }).then(function(j){
+    $("wTemp").textContent = Math.round(j.current.temperature_2m) + "°C";
+    $("wSub").innerHTML = (WMO[j.current.weather_code] || "—") + "<br>H " + Math.round(j.daily.temperature_2m_max[0]) +
+      "° · L " + Math.round(j.daily.temperature_2m_min[0]) + "° · " + Math.round(j.current.wind_speed_10m) + " km/h";
+  }).catch(function(){ $("wTemp").textContent = "—"; $("wSub").textContent = CITY.name + " weather unavailable"; });
+}
+weather(); setInterval(weather, 15*60*1000);
+
+/* ===== Idle screensaver clock ===== */
+var idle = 0, saver = $("saver"), sc = $("sc");
+function wake(){ idle = 0; if(saver.classList.contains("on")){ saver.classList.remove("on"); } }
+["keydown","mousemove","click","touchstart"].forEach(function(ev){ document.addEventListener(ev, wake, true); });
+setInterval(function(){
+  idle++;
+  if(idle >= IDLE_SECONDS){
+    if(!saver.classList.contains("on")) saver.classList.add("on");
+    if(idle % 60 === 0 || idle === IDLE_SECONDS){           // drift so nothing burns in
+      sc.style.left = (Math.random()*35) + "%"; sc.style.top = (Math.random()*45) + "%";
+    }
+  }
+}, 1000);
+
+/* ===== D-pad navigation ===== */
+function focusables(){
+  var all = document.querySelectorAll(".tile, .btn, #q"), out = [];
+  for(var i=0;i<all.length;i++){ if(all[i].offsetParent !== null && !dlg.open) out.push(all[i]); }
+  return out;
+}
+document.addEventListener("keydown", function(e){
+  if(dlg.open) return;
+  var dir = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+  if(!dir) return;
+  var cur = document.activeElement;
+  if(cur && cur.id === "q" && dir[1] === 0) return;
+  var list = focusables();
+  if(list.indexOf(cur) < 0){
+    var first = null; for(var i=0;i<list.length;i++){ if(list[i].classList.contains("tile")){ first = list[i]; break; } }
+    (first || list[0]).focus(); e.preventDefault(); return;
+  }
+  var r = cur.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2, best = null, bs = 1e12;
+  for(var k=0;k<list.length;k++){
+    var el = list[k]; if(el === cur) continue;
+    var b = el.getBoundingClientRect(), x = b.left + b.width/2 - cx, y = b.top + b.height/2 - cy;
+    var along = x*dir[0] + y*dir[1]; if(along <= 4) continue;
+    var across = Math.abs(dir[0] ? y : x), s = along + across*2.2;
+    if(s < bs){ bs = s; best = el; }
+  }
+  if(best){ best.focus(); best.scrollIntoView({block:"center", behavior:"smooth"}); e.preventDefault(); }
+});
+render();
+</script>
+</body>
+</html>
