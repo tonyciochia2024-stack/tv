@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Jarvis · phone mic</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#010510;color:#eaf4ff;font-family:"Times New Roman",Times,serif}
+body{display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 0%,#0a2a66 0%,#020818 60%)}
+header{padding:18px 18px 10px;text-align:center}
+h1{font-weight:400;font-size:26px;letter-spacing:.4em;color:#4cc9ff;text-shadow:0 0 14px rgba(76,201,255,.7)}
+#st{margin-top:6px;font-size:14px;letter-spacing:.2em;color:#8fa8cc;text-transform:uppercase}
+#log{flex:1;overflow-y:auto;padding:8px 16px;display:flex;flex-direction:column}
+.m{max-width:88%;margin:6px 0;padding:10px 12px;font-size:19px;line-height:1.3;border:1px solid rgba(76,201,255,.3)}
+.u{align-self:flex-end;background:rgba(40,110,230,.35)}
+.a{align-self:flex-start;background:rgba(10,40,90,.6);border-left:4px solid #4cc9ff}
+#mic{align-self:center;width:112px;height:112px;margin:10px;border-radius:50%;border:3px solid #4cc9ff;background:radial-gradient(circle,rgba(40,130,255,.55),rgba(5,20,60,.8));color:#eaf4ff;font:inherit;font-size:19px;letter-spacing:.15em;box-shadow:0 0 26px rgba(76,201,255,.5)}
+#mic.on{border-color:#38ff9c;box-shadow:0 0 34px rgba(56,255,156,.8);animation:p 1s ease-in-out infinite}
+@keyframes p{50%{transform:scale(1.07)}}
+.row{display:flex;padding:0 14px 12px}
+input{flex:1;min-width:0;background:rgba(10,30,70,.7);border:2px solid rgba(76,201,255,.4);color:#eaf4ff;font:inherit;font-size:19px;padding:12px}
+button.s{margin-left:8px;padding:0 18px;background:rgba(20,70,150,.6);border:2px solid rgba(76,201,255,.5);color:#eaf4ff;font:inherit;font-size:18px}
+.lang{display:flex;justify-content:center;gap:8px;margin-bottom:4px}
+.lang button{padding:6px 16px;background:transparent;border:2px solid rgba(76,201,255,.35);color:#8fa8cc;font:inherit;font-size:16px}
+.lang button.on{color:#fff;border-color:#4cc9ff;background:rgba(40,120,230,.45)}
+#pair{padding:20px;text-align:center}
+#pair input{width:100%;text-align:center;letter-spacing:.3em;font-size:24px;margin:14px 0}
+#pair button{padding:12px 28px;background:rgba(20,70,150,.6);border:2px solid #4cc9ff;color:#fff;font:inherit;font-size:20px}
+a{color:#4cc9ff}
+</style></head><body>
+<header><h1>JARVIS</h1><div id="st">Phone microphone</div></header>
+<div id="pair" style="display:none"><p>Enter the code shown at the bottom of the Jarvis panel on your TV.</p><input id="code" maxlength="8" autocomplete="off" autocapitalize="off"><button id="save">Connect</button></div>
+<div id="main" style="display:none;flex:1;flex-direction:column;min-height:0">
+  <div id="log"></div>
+  <div class="lang"><button id="en" class="on">EN</button><button id="ro">RO</button><button id="chg">Change code</button></div>
+  <button id="mic">TAP &amp; SPEAK</button>
+  <div class="row"><input id="txt" placeholder="…or type here" autocomplete="off"><button class="s" id="send">Send</button></div>
+</div>
+<script>
+var KEY="jvcode",code=(location.hash||"").replace("#","").toLowerCase();
+try{ if(code){ localStorage.setItem(KEY,code); history.replaceState(null,"",location.pathname); } else code=localStorage.getItem(KEY)||""; }catch(e){}
+function $(i){return document.getElementById(i)}
+var lang="en-US",SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,on=false,es=null;
+function show(){ var ok=/^[a-z0-9]{6,12}$/.test(code); $("pair").style.display=ok?"none":"block"; $("main").style.display=ok?"flex":"none"; if(ok) connect(); }
+function add(c,t){ var d=document.createElement("div"); d.className="m "+c; d.textContent=t; $("log").appendChild(d); $("log").scrollTop=1e9; }
+function send(t){ t=(t||"").trim(); if(!t) return; add("u",t); $("st").textContent="Sent to TV";
+  fetch("https://ntfy.sh/tvhome-"+code,{method:"POST",body:t}).catch(function(){ $("st").textContent="Could not send"; }); }
+function connect(){ if(es||!window.EventSource) return; es=new EventSource("https://ntfy.sh/tvhome-"+code+"r/sse");
+  es.onmessage=function(e){ try{ var d=JSON.parse(e.data); if(d.event==="message"&&d.message){ add("a",d.message); $("st").textContent="Phone microphone"; } }catch(x){} }; }
+$("save").onclick=function(){ code=$("code").value.trim().toLowerCase(); try{localStorage.setItem(KEY,code);}catch(e){} show(); };
+$("chg").onclick=function(){ code=""; try{localStorage.removeItem(KEY);}catch(e){} if(es){es.close();es=null;} show(); };
+$("send").onclick=function(){ send($("txt").value); $("txt").value=""; };
+$("txt").onkeydown=function(e){ if(e.key==="Enter"){ send($("txt").value); $("txt").value=""; } };
+$("en").onclick=function(){ lang="en-US"; $("en").className="on"; $("ro").className=""; };
+$("ro").onclick=function(){ lang="ro-RO"; $("ro").className="on"; $("en").className=""; };
+if(!SR){ $("mic").textContent="NO MIC SUPPORT"; $("mic").disabled=true; }
+$("mic").onclick=function(){
+  if(!SR) return; if(on){ rec.stop(); return; }
+  rec=new SR(); rec.lang=lang; rec.interimResults=false;
+  rec.onresult=function(e){ send(e.results[0][0].transcript); };
+  rec.onend=function(){ on=false; $("mic").className=""; $("mic").innerHTML="TAP &amp; SPEAK"; };
+  rec.onerror=function(){ $("st").textContent="Mic blocked or not heard"; };
+  try{ rec.start(); on=true; $("mic").className="on"; $("mic").textContent="LISTENING"; $("st").textContent="Listening…"; }catch(e){}
+};
+show();
+</script></body></html>
