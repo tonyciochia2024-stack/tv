@@ -213,7 +213,7 @@ function homeBody(){
   }
   if(homeTab===1){
     return '<div class="panel"><div class="hint">Atingeți o materie ca să vedeți notele și absențele.</div>'+
-      SUBJECTS.map(function(s,i){return '<button class="row" data-subj="'+i+'"><span class="nm">'+esc(s)+'</span><span class="dash">—</span><span class="cnt">'+(gOf(i).length?gOf(i).length+' note · medie '+fmt(avg(gOf(i))):'0 note')+(pOf(i).length?' · '+pOf(i).length+' plus':'')+' · 0 abs.</span>'+CHEV+'</button>'}).join("")+'</div>';
+      SUBJECTS.map(function(s,i){return '<button class="row" data-subj="'+i+'"><span class="nm">'+esc(s)+'</span><span class="dash">—</span><span class="cnt">'+(gOf(i).length?gOf(i).length+' note':'0 note')+(pOf(i).length?' · '+pOf(i).length+' plus':'')+' · 0 abs.</span>'+CHEV+'</button>'}).join("")+'</div>';
   }
   return '<div class="panel">'+
     '<div class="sec"><h3>Media generală</h3>'+genAvgHtml()+'</div>'+
