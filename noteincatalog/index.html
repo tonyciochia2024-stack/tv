@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>NoteInCatalog.ro</title>
+<style>
+@font-face{font-family:"DM Sans";font-style:normal;font-weight:100 1000;font-display:block;
+  src:url(fonts/dm-sans-latin-ext-wght-normal.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"DM Sans";font-style:normal;font-weight:100 1000;font-display:block;
+  src:url(fonts/dm-sans-latin-wght-normal.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{--red:#ae1b1f;--red-dark:#8f1519;--bg:#f4f4f4;--line:#e3e5e9;--ink:#0f1729;--ink2:#374151;--muted:#7c828e;--muted2:#a1a6b2;--tab:#e8e9ee}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:400 14px/1.4 "DM Sans",system-ui,sans-serif;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+header{flex:none;height:54px;background:var(--red);display:flex;align-items:center;padding:0 23px 0 23px;position:relative;z-index:5;box-shadow:0 3px 12px rgba(0,0,0,.24);color:#fff}
+header .ham{width:18px;height:20px;display:flex;flex-direction:column;justify-content:center;gap:4.5px;border:0;background:none;padding:0;margin-right:19px}
+header .ham i{display:block;height:2px;border-radius:2px;background:#fff;width:18px}
+header .brand{flex:1;font-size:19px;font-weight:700;letter-spacing:-.25px;white-space:nowrap}
+header .brand span{font-weight:400;color:rgba(255,255,255,.6)}
+header .chat{border:0;background:none;padding:0;width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+header .chat svg{width:19px;height:19px}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 30px}
+.page{padding:0 16px}.page.wide{padding:0 32px}
+h1{font-size:24px;line-height:27.6px;font-weight:700;margin:26.5px 0 0}
+.sub{font-size:14px;line-height:18.9px;color:var(--muted);margin:4.5px 0 0}
+.sub code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.6px}
+.stats{display:flex;gap:8.6px;margin-top:20.8px}
+.stat{flex:1;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 12.5px 0;height:113.7px}
+.stat .k{font-size:9.6px;line-height:12.5px;letter-spacing:.15px;text-transform:uppercase;color:#6b7280;font-weight:500}
+.stat .v{font-size:24px;line-height:26.4px;font-weight:700;margin-top:7.6px}
+.stat .n{font-size:9.3px;line-height:11.7px;color:var(--muted2);margin-top:5.4px}
+.tabs{display:flex;gap:6.5px;margin:20px 4px 0;align-items:flex-end}
+.tab{flex:1;position:relative;border:0;background:var(--tab);color:#6b7280;font:500 14px "DM Sans",sans-serif;height:41.6px;border-radius:14px 14px 0 0;padding:0}
+.tab.on{background:#fff;color:var(--ink);font-weight:700;height:49px;border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;z-index:2;margin-bottom:-1px;padding-bottom:1px}
+.tab.on:before{content:"";position:absolute;top:0;left:12.5%;width:75%;height:4px;background:var(--red);border-radius:0 0 4px 4px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:0 0 14px 14px;margin:0;position:relative;z-index:1}
+.empty{min-height:80px}
+.hint{padding:10px 17px;color:var(--muted);font-size:14px;line-height:20px;border-bottom:1px solid #eceef1}
+.row{display:flex;align-items:center;padding:13px 17px 13px 17px;border:0;border-bottom:1px solid #eceef1;font:400 14px/18px "DM Sans",sans-serif;text-transform:uppercase;color:#1f2937;gap:0;width:100%;background:none;text-align:left}
+.row:last-child{border-bottom:0}
+.row .nm{flex:1;min-width:0;padding-right:8px}
+.row .dash{color:var(--muted2);font-size:12px;margin-right:13px}
+.row .cnt{color:var(--muted2);font-size:12px;white-space:nowrap;text-transform:none;margin-right:17px}
+.row svg{width:7px;height:12px;flex:none;margin-right:4px}
+.sec{padding:15.5px 17px 16px;border-bottom:1px solid #eceef1}
+.sec:last-child{border-bottom:0}
+.sec h3{margin:0;font-size:14px;line-height:20px;font-weight:700}
+.sec p{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:20.4px}
+.sec p b{color:var(--ink2);font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-radius:15px;margin-top:16px;overflow:hidden}
+.first{margin-top:20.8px}
+.bd{padding:24px}
+.card .hd{background:#f5f6f8;border-bottom:1px solid var(--line);padding:0 24px;height:48px;display:flex;align-items:center;font-size:14px;font-weight:700}
+.tr{display:flex;align-items:center;padding:12px 24px;border-bottom:1px solid #f0f1f4;font-size:14px;line-height:20.3px;color:#3a4356}
+.tr:last-child{border-bottom:0}
+.tr .t{width:95.5px;flex:none;font-weight:500;font-variant-numeric:tabular-nums}
+.tr .s{flex:1;text-transform:uppercase}
+label.l{display:block;font-size:14px;line-height:20px;color:var(--ink2);margin:0 0 4px;font-weight:500}
+input[type=text],input[type=password],select{width:100%;height:43px;border:1px solid #c8cfd8;border-radius:10px;background:#fff;font:400 14px "DM Sans",sans-serif;color:var(--ink);padding:0 14px;outline:0;-webkit-appearance:none;appearance:none}
+select{background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%235b6170' stroke-width='1.4'/></svg>") no-repeat right 14px center;padding-right:36px;height:38px;border:1.5px solid #c8cfd8}
+input:focus,select:focus{border-color:#2f5f9a;box-shadow:0 0 0 3px rgba(47,95,154,.28)}
+.btn{display:inline-block;border:0;border-radius:10px;background:var(--red);color:#fff;font:600 15.5px "DM Sans",sans-serif;height:44px;padding:0 20px}
+.btn:active{background:var(--red-dark)}
+.btn.ghost{background:#fff;color:var(--ink2);border:1px solid #cfd4dc;font-weight:500}
+.btn.dis{background:#d98b8f}
+.fld{margin-bottom:16px}
+.rules{list-style:none;margin:6px 0 0;padding:0;font-size:12px;color:var(--muted)}
+.rules li{display:flex;align-items:center;gap:10.5px;line-height:20px}
+.rules li:before{content:"";width:11px;height:11px;border-radius:50%;border:1.6px solid #6b7280;flex:none}
+.rules li.ok{color:#177a43}
+.rules li.ok:before{border-color:#177a43;background:#177a43 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2.600 6.200l2.300 2.300 4.500-4.600' fill='none' stroke='white' stroke-width='1.800'/></svg>") center/contain no-repeat}
+.card h2{margin:0 0 4px;font-size:17.5px;line-height:22.7px;font-weight:700}
+.card .pp{color:var(--muted);font-size:14px;line-height:20px;margin:0 0 20px}
+.code{display:flex;gap:8px;margin-top:11px}
+.code input{flex:1;height:38px;letter-spacing:2px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;text-transform:uppercase;padding:0 13px}
+.code input::placeholder{color:#8f95a3;letter-spacing:2px}
+.code .btn{height:38px;padding:0 16px;font-size:12.5px;font-weight:600}
+.note{margin:12px 0 0;color:var(--muted2);font-size:12px;line-height:15.6px}
+.center{padding:32px 16px;text-align:center;color:var(--muted2);font-size:14px;line-height:20px}
+.search{display:block;width:100%;height:39px;border:1px solid var(--line);border-radius:12px;background:#f4f4f4;padding:0 17px;font:400 15px "DM Sans",sans-serif;margin-top:27px;outline:0}
+.search:focus{background:#fff}
+.msgs{padding:54px 16px 50px;text-align:center;color:#8b909c;font-size:14px;line-height:20px}
+.msgs svg{width:40px;height:37px;stroke:#bdbdbd;fill:none;stroke-width:5;display:block;margin:0 auto 20px}
+.tabbar{display:flex;border-bottom:1px solid var(--line);margin-top:26px}
+.tabbar span{padding:0 16px 11px;color:var(--red);font-size:14px;line-height:20px;font-weight:500;border-bottom:2.2px solid var(--red);margin-bottom:-1px}
+.accwrap{margin-top:22px;font-size:11px;letter-spacing:.7px;color:#6b7280;font-weight:700;text-transform:uppercase}
+.acc{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;min-height:96px}
+.ava{width:40px;height:40px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+.acc .nm{flex:1;font-size:16px;line-height:22px;color:#1b2335}
+.acc .nm small{display:block;font-size:14px;line-height:18px;color:var(--muted2)}
+.badge{background:#f4e2e3;color:var(--red);font-weight:700;font-size:11.5px;border-radius:999px;padding:5px 12px}
+.fab{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;border:0;background:var(--red);box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:3}
+.fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2.4;stroke-linecap:round}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.52);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;z-index:20}
+#drawer{position:fixed;top:0;bottom:0;left:0;width:223px;background:#fff;z-index:21;transform:translateX(-102%);transition:transform .24s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.25)}
+body.dr #scrim{opacity:1;visibility:visible}
+body.dr #drawer{transform:none}
+#drawer .dh{flex:none;height:59.5px;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 17px}
+#drawer .dh b{font-size:17.5px;font-weight:700}
+#drawer .dh button{border:0;background:none;width:16px;height:16px;padding:0;display:flex}
+#drawer .dh svg{width:16px;height:16px;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
+#drawer nav{flex:1;overflow-y:auto;padding-top:8px}
+#drawer a{display:flex;align-items:center;justify-content:space-between;height:45px;padding:0 24px 0 20px;font-size:14px;color:#1c2436;text-decoration:none}
+#drawer a.on{background:#f8f1f2;color:var(--red);font-weight:700}
+#drawer a.sub2{padding-left:34px;font-size:13px;color:#4a5262;height:38px}
+#drawer a svg{width:7px;height:12px;stroke:#2d3648;transition:transform .2s}
+#drawer a.open svg{transform:rotate(90deg)}
+#drawer hr{border:0;border-top:1px solid var(--line);margin:8px 0 0}
+#drawer a.sync{gap:10px;justify-content:flex-start}
+#drawer a.sync svg{width:17px;height:17px;stroke:var(--red);stroke-width:2.2;transition:none}
+#toast{position:fixed;left:50%;bottom:42px;transform:translate(-50%,20px);background:rgba(24,28,40,.94);color:#fff;font-size:13px;padding:11px 18px;border-radius:999px;opacity:0;transition:opacity .2s,transform .2s;z-index:50;pointer-events:none;max-width:86%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.gr{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:10px;background:#f4e2e3;color:var(--red);font-weight:700;font-size:16px;flex:none}
+.grs{display:flex;flex-wrap:wrap;gap:8px;padding:16px 17px}
+.nrow{display:flex;align-items:center;gap:12px;padding:12px 17px;border-bottom:1px solid #eceef1}
+.nrow:last-child{border-bottom:0}
+.nrow .nm{flex:1;min-width:0;font-size:14px;line-height:18px;color:#1f2937}
+.nrow small{display:block;color:var(--muted2);font-size:12px}
+.nrow .x{border:0;background:none;color:var(--muted2);font-size:20px;padding:4px 8px}
+.btn.full{display:block;width:calc(100% - 34px);margin:16px 17px}
+#pick{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:40;display:none;align-items:flex-end;justify-content:center}
+#pick.show{display:flex}
+#pick .sheet{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:20px 16px 24px}
+#pick h2{margin:0 0 14px;font-size:17px}
+#pick .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+#pick .nums button{height:52px;border:1px solid #cfd4dc;border-radius:12px;background:#fff;font:700 20px "DM Sans",sans-serif;color:var(--ink)}
+#pick .nums button:active{background:var(--red);color:#fff;border-color:var(--red)}
+#pick .btn.ghost{width:100%;margin-top:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button class="ham" id="btnMenu" aria-label="Meniu"><i></i><i></i><i></i></button>
+    <div class="brand">NoteInCatalog<span>.ro</span></div>
+    <button class="chat" id="btnChat" aria-label="Mesaje">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.2c-4.9 0-8.8 3.2-8.8 7.3 0 1.9.9 3.7 2.4 5l-.9 4 3.9-1.8c1 .3 2.2.5 3.4.5 4.9 0 8.8-3.2 8.8-7.3S16.900 3.200 12 3.200z"/><circle cx="8.600" cy="10.600" r=".9" fill="#fff" stroke="none"/><circle cx="12" cy="10.600" r=".9" fill="#fff" stroke="none"/><circle cx="15.400" cy="10.600" r=".9" fill="#fff" stroke="none"/></svg>
+    </button>
+  </header>
+  <main id="view"></main>
+</div>
+
+<div id="scrim"></div>
+<aside id="drawer">
+  <div class="dh"><b>Meniu</b><button id="btnClose" aria-label="Închide"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+  <nav id="nav"></nav>
+</aside>
+<div id="pick"><div class="sheet"><h2>Alege nota (1–10)</h2><div class="nums"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button></div><button class="btn ghost" id="pickCancel">Anulează</button></div></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+function fit(){var d=document.documentElement;d.style.zoom="";var w=window.innerWidth||360;d.style.zoom=(w/360).toFixed(4)}
+window.addEventListener("resize",fit);fit();
+var NAME="TONY DANIEL", FULL="CIOCHIA TONY DANIEL", CLASS="Clasa 8A";
+var SUBJECTS=["Biologie","Chimie","Educație fizică","Educație muzicală","Educație plastică","Educație socială","Educație tehnologică","Fizică","Geografie","Informatică și TIC","Istorie","Limba engleză","Limba germană","Limba și literatura română","Matematică","Purtare","Religie","Tehnici și exerciții de exprimare a opiniei prin texte argumentative (CDEOȘ)"];
+var ORAR=[
+ ["Luni",[["08:50","Istorie"],["09:50","Limba și literatura română"],["10:50","Educație socială"],["11:00","Matematică"],["12:00","Educație muzicală"],["13:00","Biologie"]]],
+ ["Marți",[["08:50","Chimie"],["09:00","Educație tehnologică"],["12:00","Religie"],["13:00","Educație fizică"]]],
+ ["Miercuri",[["08:00","Matematică"],["10:00","Limba modernă 1 – Engleză"],["11:00","Matematică"],["12:00","Educație fizică"],["13:50","Dirigenție"]]],
+ ["Joi",[["08:00","Limba modernă 1 – Engleză"],["09:00","Matematică"],["10:50","Limba și literatura română"],["11:00","Educație plastică"],["12:50","Limba și literatura română"],["13:50","Chimie"]]],
+ ["Vineri",[["08:00","Informatică și TIC"],["09:50","Istorie"],["11:50","Limba și literatura română"],["13:00","Geografie"]]]
+];
+var MENU=[["home","Situația mea"],["orar","Orar"],["biblioteca","Bibliotecă"],["teste","Teste"],["mesaje","Mesaje"],["avizier","Avizier"],["cont","Contul meu"],["sesizez","SesizezȘcoala",1],["conturi","Adaugă/Schimbă cont"]];
+var CHEV='<svg viewBox="0 0 14 14" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.500 1.500L10 7l-5.500 5.500"/></svg>';
+var OFFLINE="Indisponibil în modul offline.";
+
+var GK="nic_grades_v1";
+var grades=[];try{grades=JSON.parse(localStorage.getItem(GK)||"[]")}catch(e){}
+function saveG(){try{localStorage.setItem(GK,JSON.stringify(grades))}catch(e){}}
+function gOf(i){return grades.filter(function(g){return g.s===i})}
+function avg(a){if(!a.length)return null;var t=0;a.forEach(function(g){t+=g.v});return t/a.length}
+function fmt(x){return x===null?"—":x.toFixed(2).replace(".",",")}
+function dstr(t){var d=new Date(t),z=function(n){return(n<10?"0":"")+n};return z(d.getDate())+"."+z(d.getMonth()+1)+"."+d.getFullYear()}
+var subjIdx=-1;
+var screen="home", homeTab=0, subject="", sesOpen=false;
+var $=function(id){return document.getElementById(id)};
+var view=$("view"), nav=$("nav");
+var tmr;
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tmr);tmr=setTimeout(function(){e.classList.remove("show")},2200)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* ---------- screens ---------- */
+function tabsHtml(){
+  var n=["Ce e nou","Materii","Rezumat"];
+  return '<div class="tabs">'+n.map(function(t,i){return '<button class="tab'+(i===homeTab?' on':'')+'" data-tab="'+i+'"><span>'+t+'</span></button>'}).join("")+'</div>';
+}
+function homeBody(){
+  if(homeTab===0){
+    if(!grades.length) return '<div class="panel"><div class="empty"></div></div>';
+    return '<div class="panel">'+grades.slice().reverse().slice(0,30).map(function(g){return '<div class="nrow"><span class="gr">'+g.v+'</span><div class="nm">Notă nouă la '+esc(SUBJECTS[g.s])+'<small>'+dstr(g.t)+'</small></div></div>'}).join("")+'</div>';
+  }
+  if(homeTab===1){
+    return '<div class="panel"><div class="hint">Atingeți o materie ca să vedeți notele și absențele.</div>'+
+      SUBJECTS.map(function(s,i){return '<button class="row" data-subj="'+i+'"><span class="nm">'+esc(s)+'</span><span class="dash">—</span><span class="cnt">'+(gOf(i).length?gOf(i).length+' note · medie '+fmt(avg(gOf(i))):'0 note')+' · 0 abs.</span>'+CHEV+'</button>'}).join("")+'</div>';
+  }
+  return '<div class="panel">'+
+    '<div class="sec"><h3>Media generală</h3>'+genAvgHtml()+'</div>'+
+    '<div class="sec"><h3>Absențe pe luni</h3><p>Nicio absență în acest an școlar.</p></div>'+
+    '<div class="sec"><h3>Scutiri și învoiri</h3><p>Absențe motivate prin învoire de la părinte în acest an: <b>0</b> din maximum <b>40</b>.</p></div></div>';
+}
+function subjAvgs(){var a=[];SUBJECTS.forEach(function(_,i){var m=avg(gOf(i));if(m!==null)a.push(m)});return a}
+function genAvg(){var a=subjAvgs(),t=0;if(!a.length)return null;a.forEach(function(x){t+=x});return t/a.length}
+function genAvgHtml(){var g=genAvg();return g===null?'<p>Nu există încă medii la materii. Media generală apare după primele note.</p>':'<p>Media generală: <b>'+fmt(g)+'</b> (din '+subjAvgs().length+' materii cu note)</p>'}
+var R={
+ home:function(){
+  return '<div class="page"><h1>'+NAME+'</h1><div class="sub">'+CLASS+' · situația școlară</div>'+
+   '<div class="stats">'+
+   '<div class="stat"><div class="k">Absențe</div><div class="v">0</div></div>'+
+   '<div class="stat"><div class="k">Nemotivate</div><div class="v">0</div></div>'+
+   '<div class="stat"><div class="k">Media gen.</div><div class="v">'+fmt(genAvg())+'</div>'+(genAvg()===null?'<div class="n">nu există suficiente note pentru calcul</div>':'')+'</div></div>'+
+   tabsHtml()+'<div id="hb">'+homeBody()+'</div></div>';
+ },
+ materie:function(){
+  return '<div class="page"><h1 style="font-size:20px;line-height:24px">'+esc(subject)+'</h1><div class="sub">'+esc(FULL)+' · '+CLASS+'</div>'+
+   '<div class="card first"><div class="hd">Note</div>'+
+   (gOf(subjIdx).length?gOf(subjIdx).map(function(g){return '<div class="nrow"><span class="gr">'+g.v+'</span><div class="nm">'+dstr(g.t)+'</div><button class="x" data-del="'+g.t+'" aria-label="Șterge">×</button></div>'}).join("")+'<div class="nrow"><div class="nm">Media la materie</div><b>'+fmt(avg(gOf(subjIdx)))+'</b></div>':'<div class="center">Nu există note.</div>')+
+   '<button class="btn full" id="addNote">Adaugă Notă</button></div>'+
+   '<div class="card"><div class="hd">Absențe</div><div class="center">Nicio absență.</div></div></div>';
+ },
+ orar:function(){
+  return '<div class="page"><h1>Orar</h1><div class="sub">'+FULL+' · '+CLASS+'</div>'+
+   ORAR.map(function(d,i){return '<div class="card'+(i?'':' first')+'"><div class="hd">'+d[0]+'</div>'+d[1].map(function(r){return '<div class="tr"><div class="t">'+r[0]+'</div><div class="s">'+esc(r[1])+'</div></div>'}).join("")+'</div>'}).join("")+'</div>';
+ },
+ biblioteca:function(){
+  return '<div class="page"><h1>Bibliotecă</h1><div class="sub">'+FULL+' · '+CLASS+'</div>'+
+   '<div class="card first"><div class="bd" style="padding:16px 24px"><label class="l" for="sel">Alegeți materia</label><select id="sel"><option value="">—</option>'+
+   SUBJECTS.map(function(s){return '<option>'+esc(s)+'</option>'}).join("")+'</select><div id="libout"></div></div></div></div>';
+ },
+ teste:function(){
+  return '<div class="page"><h1>Teste</h1>'+
+   '<div class="card" style="margin-top:24px"><div class="hd">Disponibile acum</div><div class="center" style="padding:32px 16px">Niciun test disponibil momentan.</div></div>'+
+   '<div class="card" style="margin-top:25px"><div class="bd"><div style="font-size:14px;line-height:20px;font-weight:500;color:var(--ink2)">Ai un cod de test?</div>'+
+   '<div class="code"><input id="tc" type="text" maxlength="10" placeholder="EX. AB12CD" autocomplete="off" autocapitalize="characters"><button class="btn dis" id="tgo">Intră</button></div>'+
+   '<p class="note">Testul se poate porni doar în primele 60 de secunde de la deschidere.</p></div></div></div>';
+ },
+ mesaje:function(){
+  return '<div class="page"><h1>Mesaje</h1><input class="search" type="text" placeholder="Caută conversații..." autocomplete="off">'+
+   '<div class="card" style="margin-top:24px"><div class="msgs"><svg viewBox="0 0 80 74" stroke-linejoin="round" stroke-linecap="round"><path d="M10 4h60a4 4 0 0 1 4 4v38a4 4 0 0 1-4 4H40L24 66V50H10a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><circle cx="25" cy="27" r="1" fill="#bdbdbd"/><circle cx="40" cy="27" r="1" fill="#bdbdbd"/><circle cx="55" cy="27" r="1" fill="#bdbdbd"/></svg>Nu aveți mesaje. Trimiteți primul mesaj!</div></div></div>';
+ },
+ avizier:function(){
+  return '<div class="page"><h1>Avizier</h1><div class="tabbar"><span>Anunțuri</span></div>'+
+   '<div class="card" style="margin-top:24px"><div class="center" style="padding:48px 16px">Niciun anunț primit.</div></div></div>';
+ },
+ cont:function(){
+  return '<div class="page wide"><h1 style="margin-top:17px">Contul meu</h1><div class="sub" style="margin-top:7px">Elev · utilizator <code>ciochia127455</code></div>'+
+   '<div class="card" style="margin-top:25px"><div class="bd" style="padding:26px 24px 24px"><h2>Schimbă parola</h2>'+
+   '<p class="pp">Parola ta e separată de a celorlalți de pe acest cont. Schimbând-o, te deconectăm de pe telefoanele pe care ai folosit-o.</p>'+
+   '<div class="fld"><label class="l">Parola actuală</label><input type="password" autocomplete="off"></div>'+
+   '<div class="fld" style="margin-bottom:9px"><label class="l">Parola nouă</label><input type="password" id="np" autocomplete="off">'+
+   '<ul class="rules" id="rules"><li data-r="len">cel puțin 8 caractere</li><li data-r="up">o literă mare (A–Z)</li><li data-r="lo">o literă mică (a–z)</li><li data-r="dg">o cifră (0–9)</li></ul></div>'+
+   '<div class="fld" style="margin-bottom:16px"><label class="l">Confirmă parola nouă</label><input type="password" autocomplete="off"></div>'+
+   '<button class="btn" data-off="1">Schimbă parola</button></div></div>'+
+   '<div class="card" style="margin-top:25px"><div class="bd" style="padding:26px 24px 24px"><h2>Dispozitive memorate</h2>'+
+   '<p class="pp">Pe dispozitivele pe care le-ai confirmat deja nu îți mai cerem cod. Dacă te-ai conectat de pe calculatorul altcuiva, uită-le pe toate.</p>'+
+   '<div class="fld" style="margin-bottom:16px"><label class="l">Parola actuală</label><input type="password" autocomplete="off"></div>'+
+   '<button class="btn ghost" data-off="1">Uită toate dispozitivele</button></div></div></div>';
+ },
+ conturi:function(){
+  return '<div class="page wide"><h1 style="margin-top:45px;font-size:20px;line-height:24px">Conturile mele</h1><div class="sub" style="line-height:20.3px;margin-top:17px">Comută între conturi sau adaugă unul nou pe acest telefon.</div>'+
+   '<div class="accwrap">Cont elev</div><div class="acc"><div class="ava">C</div><div class="nm">CIOCHIA D TONY DANIEL<small>Elev</small></div><div class="badge">Activ</div></div></div>'+
+   '<button class="fab" data-off="1" aria-label="Adaugă cont"><svg viewBox="0 0 28 28" fill="none"><path d="M14 5v18M5 14h18"/></svg></button>';
+ },
+ sesizez:function(){ return R.home(); }
+};
+
+function render(){
+  view.innerHTML=R[screen]();
+  view.scrollTop=0;
+  buildNav();
+  if(screen==="biblioteca"){ $("sel").onchange=function(){ $("libout").innerHTML=this.value?'<p class="note" style="margin-top:18px">Nu există materiale pentru această materie.</p>':"" } }
+  if(screen==="cont"){ var np=$("np"); np.oninput=function(){var v=np.value,t={len:v.length>=8,up:/[A-Z]/.test(v),lo:/[a-z]/.test(v),dg:/[0-9]/.test(v)};
+      [].forEach.call($("rules").children,function(li){li.classList.toggle("ok",!!t[li.getAttribute("data-r")])})} }
+  if(screen==="teste"){ var tc=$("tc"),go=$("tgo"); tc.oninput=function(){go.classList.toggle("dis",!tc.value.trim())}; }
+}
+function buildNav(){
+  var act=(screen==="materie")?"home":screen;
+  var h="";
+  MENU.forEach(function(m){
+    if(m[2]){ h+='<a href="#" data-go="'+m[0]+'" class="'+(sesOpen?'open':'')+'">'+m[1]+CHEV+'</a>';
+      if(sesOpen){ h+='<a href="#" class="sub2" data-off="1">Sesizare</a><a href="#" class="sub2" data-off="1">Butonul roșu</a>'; } }
+    else h+='<a href="#" data-go="'+m[0]+'" class="'+(m[0]===act?'on':'')+'">'+m[1]+'</a>';
+  });
+  h+='<hr><a href="#" class="sync" data-off="1"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4.500L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4.500L20 15"/><path d="M20 20v-5h-5"/></svg>Sincronizare</a>';
+  nav.innerHTML=h;
+}
+
+/* ---------- navigation ---------- */
+function openDrawer(){ if(location.hash!=="#menu") location.hash="#menu"; }
+function applyHash(){
+  var open=location.hash==="#menu";
+  document.body.classList.toggle("dr",open);
+}
+function go(s){
+  if(s==="sesizez"){ sesOpen=!sesOpen; buildNav(); return; }
+  var wasOpen=location.hash==="#menu";
+  screen=s; subject="";
+  if(wasOpen){ history.replaceState(null,"","#"+s); } else if(location.hash!=="#"+s){ history.pushState(null,"","#"+s); }
+  applyHash(); render();
+}
+window.addEventListener("hashchange",function(){
+  var h=location.hash.replace("#","");
+  if(h==="menu"){ applyHash(); return; }
+  if(R[h]&&h!=="materie"&&h!=="sesizez"){ if(h!==screen){ screen=h; render(); } }
+  else if(h===""||h==="home"){ if(screen!=="home"){ screen="home"; render(); } }
+  applyHash();
+});
+
+document.addEventListener("click",function(e){
+  var t=e.target, el;
+  if((el=t.closest("#btnMenu"))){ openDrawer(); return; }
+  if(t.closest("#btnClose")||t.id==="scrim"){ history.back(); return; }
+  if((el=t.closest("#btnChat"))){ go("mesaje"); return; }
+  if((el=t.closest("[data-go]"))){ e.preventDefault(); go(el.getAttribute("data-go")); return; }
+  if((el=t.closest("[data-off]"))){ e.preventDefault(); toast(OFFLINE); return; }
+  if((el=t.closest("[data-tab]"))){ homeTab=+el.getAttribute("data-tab"); render(); return; }
+  if((el=t.closest("[data-subj]"))){ subject=SUBJECTS[+el.getAttribute("data-subj")]; subjIdx=+el.getAttribute("data-subj"); screen="materie"; history.pushState(null,"","#materie"); render(); return; }
+  if(t.closest("#addNote")){ $("pick").classList.add("show"); return; }
+  if(t.closest("#pickCancel")||t.id==="pick"){ $("pick").classList.remove("show"); return; }
+  if((el=t.closest("[data-n]"))){ grades.push({s:subjIdx,v:+el.getAttribute("data-n"),t:Date.now()}); saveG(); $("pick").classList.remove("show"); render(); toast("Nota "+el.getAttribute("data-n")+" a fost adăugată"); return; }
+  if((el=t.closest("[data-del]"))){ var ts=+el.getAttribute("data-del"); grades=grades.filter(function(g){return !(g.s===subjIdx&&g.t===ts)}); saveG(); render(); return; }
+  if(t.closest("#tgo")){ toast(OFFLINE); return; }
+});
+window.addEventListener("popstate",function(){ if(location.hash===""||location.hash==="#home"){ if(screen!=="home"){screen="home";render();} } applyHash(); });
+
+history.replaceState(null,"","#home");
+render();
+})();
+</script>
+</body>
+</html>
