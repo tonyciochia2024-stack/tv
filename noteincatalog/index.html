@@ -119,7 +119,7 @@ body.dr #drawer{transform:none}
 .gr.pl{background:#e6f7ee;color:#177a43;border:1px solid #b9ebd0}
 .nrow .nm b{text-transform:uppercase;font-weight:700;color:#1b2335}
 .btns{display:flex;gap:10px;padding:16px 17px}
-.btns .btn{flex:1;margin:0;width:auto;padding:0 8px}
+.btns .btn{flex:1;margin:0;width:auto;padding:0 6px;font-size:14px;white-space:nowrap}
 .btn.plus{background:#177a43}
 .grs{display:flex;flex-wrap:wrap;gap:8px;padding:16px 17px}
 .nrow{display:flex;align-items:center;gap:12px;padding:12px 17px;border-bottom:1px solid #eceef1}
@@ -135,6 +135,9 @@ body.dr #drawer{transform:none}
 #pick .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 #pick .nums button{height:52px;border:1px solid #cfd4dc;border-radius:12px;background:#fff;font:700 20px "DM Sans",sans-serif;color:var(--ink)}
 #pick .nums button:active{background:var(--red);color:#fff;border-color:var(--red)}
+#pick input[type=date]{width:100%;height:44px;border:1px solid #c8cfd8;border-radius:10px;padding:0 12px;font:400 16px "DM Sans",sans-serif;margin-bottom:16px;background:#fff;color:var(--ink)}
+#pick label{display:block;font-size:13px;color:var(--ink2);margin-bottom:4px;font-weight:500}
+#pick .btn.okb{width:100%;background:#177a43}
 #pick .btn.ghost{width:100%;margin-top:14px}
 .bar{flex:none;background:#fff}
 :root{--bt:max(env(safe-area-inset-top,0px),26px);--bb:10px}
@@ -164,7 +167,7 @@ body.dr #drawer{transform:none}
   <div class="dh"><b>Meniu</b><button id="btnClose" aria-label="Închide"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
   <nav id="nav"></nav>
 </aside>
-<div id="pick"><div class="sheet"><h2>Alege nota (1–10)</h2><div class="nums"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button></div><button class="btn ghost" id="pickCancel">Anulează</button></div></div>
+<div id="pick"><div class="sheet"><h2 id="ph">Alege nota (1–10)</h2><label for="pd">Data</label><input type="date" id="pd"><div class="nums" id="pn"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button></div><button class="btn okb" id="pickOk">Adaugă</button><button class="btn ghost" id="pickCancel">Anulează</button></div></div>
 <div id="toast"></div>
 
 <script>
@@ -193,7 +196,11 @@ function pOf(i){return grades.filter(function(g){return g.s===i&&g.p})}
 function avg(a){if(!a.length)return null;var t=0;a.forEach(function(g){t+=g.v});return t/a.length}
 function fmt(x){return x===null?"—":x.toFixed(2).replace(".",",")}
 function dstr(t){var d=new Date(t),z=function(n){return(n<10?"0":"")+n};return z(d.getDate())+"."+z(d.getMonth()+1)+"."+d.getFullYear()}
-var subjIdx=-1;
+var subjIdx=-1, pickMode="n";
+function todayIso(){var d=new Date(),z=function(n){return(n<10?"0":"")+n};return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())}
+function pickT(){var v=$("pd").value||todayIso(),p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2],12,0,0).getTime()}
+function openPick(m){pickMode=m;$("ph").textContent=m==="n"?"Alege nota (1–10)":"Adaugă însemnare";$("pn").style.display=m==="n"?"":"none";$("pickOk").style.display=m==="n"?"none":"";$("pd").value=todayIso();$("pick").classList.add("show")}
+function addG(o){o.t=pickT();o.i=Date.now()+Math.random();grades.push(o);saveG();$("pick").classList.remove("show");render()}
 var screen="home", homeTab=0, subject="", sesOpen=false;
 var $=function(id){return document.getElementById(id)};
 var view=$("view"), nav=$("nav");
@@ -209,11 +216,11 @@ function tabsHtml(){
 function homeBody(){
   if(homeTab===0){
     if(!grades.length) return '<div class="panel"><div class="empty"></div></div>';
-    return '<div class="panel">'+grades.slice().reverse().slice(0,30).map(function(g){return '<div class="nrow">'+(g.p?'<span class="gr pl">+</span><div class="nm">Plus · <b>'+esc(SUBJECTS[g.s])+'</b>':'<span class="gr">'+g.v+'</span><div class="nm">Notă la <b>'+esc(SUBJECTS[g.s])+'</b>')+'<small>'+dstr(g.t)+'</small></div></div>'}).join("")+'</div>';
+    return '<div class="panel">'+grades.slice().sort(function(a,b){return b.t-a.t||(b.i||b.t)-(a.i||a.t)}).slice(0,30).map(function(g){return '<div class="nrow">'+(g.p?'<span class="gr pl">+</span><div class="nm">Însemnare · <b>'+esc(SUBJECTS[g.s])+'</b>':'<span class="gr">'+g.v+'</span><div class="nm">Notă la <b>'+esc(SUBJECTS[g.s])+'</b>')+'<small>'+dstr(g.t)+'</small></div></div>'}).join("")+'</div>';
   }
   if(homeTab===1){
     return '<div class="panel"><div class="hint">Atingeți o materie ca să vedeți notele și absențele.</div>'+
-      SUBJECTS.map(function(s,i){return '<button class="row" data-subj="'+i+'"><span class="nm">'+esc(s)+'</span><span class="dash">—</span><span class="cnt">'+(gOf(i).length?gOf(i).length+' note':'0 note')+(pOf(i).length?' · '+pOf(i).length+' plus':'')+' · 0 abs.</span>'+CHEV+'</button>'}).join("")+'</div>';
+      SUBJECTS.map(function(s,i){return '<button class="row" data-subj="'+i+'"><span class="nm">'+esc(s)+'</span><span class="dash">—</span><span class="cnt">'+(gOf(i).length?gOf(i).length+' note':'0 note')+(pOf(i).length?' · '+pOf(i).length+' însemnări':'')+' · 0 abs.</span>'+CHEV+'</button>'}).join("")+'</div>';
   }
   return '<div class="panel">'+
     '<div class="sec"><h3>Media generală</h3>'+genAvgHtml()+'</div>'+
@@ -235,9 +242,9 @@ var R={
  materie:function(){
   return '<div class="page"><h1 style="font-size:20px;line-height:24px">'+esc(subject)+'</h1><div class="sub">'+esc(FULL)+' · '+CLASS+'</div>'+
    '<div class="card first"><div class="hd">Note</div>'+
-   (gOf(subjIdx).length?gOf(subjIdx).map(function(g){return '<div class="nrow"><span class="gr">'+g.v+'</span><div class="nm">'+dstr(g.t)+'</div><button class="x" data-del="'+g.t+'" aria-label="Șterge">×</button></div>'}).join("")+'<div class="nrow"><div class="nm">Media la materie</div><b>'+fmt(avg(gOf(subjIdx)))+'</b></div>':'<div class="center">Nu există note.</div>')+
-   '<div class="btns"><button class="btn" id="addNote">Adaugă Notă</button><button class="btn plus" id="addPlus">Adaugă Plus</button></div></div>'+
-   '<div class="card"><div class="hd">Plusuri</div>'+(pOf(subjIdx).length?pOf(subjIdx).map(function(g){return '<div class="nrow"><span class="gr pl">+</span><div class="nm">'+dstr(g.t)+'</div><button class="x" data-del="'+g.t+'" aria-label="Șterge">×</button></div>'}).join(""):'<div class="center">Niciun plus.</div>')+'</div>'+
+   (gOf(subjIdx).length?gOf(subjIdx).map(function(g){return '<div class="nrow"><span class="gr">'+g.v+'</span><div class="nm">'+dstr(g.t)+'</div><button class="x" data-del="'+(g.i||g.t)+'" aria-label="Șterge">×</button></div>'}).join("")+'<div class="nrow"><div class="nm">Media la materie</div><b>'+fmt(avg(gOf(subjIdx)))+'</b></div>':'<div class="center">Nu există note.</div>')+
+   '<div class="btns"><button class="btn" id="addNote">Adaugă Notă</button><button class="btn plus" id="addIns">Adaugă Însemnare</button></div></div>'+
+   '<div class="card"><div class="hd">Însemnări</div>'+(pOf(subjIdx).length?pOf(subjIdx).map(function(g){return '<div class="nrow"><span class="gr pl">+</span><div class="nm">'+dstr(g.t)+'</div><button class="x" data-del="'+(g.i||g.t)+'" aria-label="Șterge">×</button></div>'}).join(""):'<div class="center">Nicio însemnare.</div>')+'</div>'+
    '<div class="card"><div class="hd">Absențe</div><div class="center">Nicio absență.</div></div></div>';
  },
  orar:function(){
@@ -337,11 +344,12 @@ document.addEventListener("click",function(e){
   if((el=t.closest("[data-off]"))){ e.preventDefault(); toast(OFFLINE); return; }
   if((el=t.closest("[data-tab]"))){ homeTab=+el.getAttribute("data-tab"); render(); return; }
   if((el=t.closest("[data-subj]"))){ subject=SUBJECTS[+el.getAttribute("data-subj")]; subjIdx=+el.getAttribute("data-subj"); screen="materie"; history.pushState(null,"","#materie"); render(); return; }
-  if(t.closest("#addNote")){ $("pick").classList.add("show"); return; }
-  if(t.closest("#addPlus")){ grades.push({s:subjIdx,p:1,t:Date.now()}); saveG(); render(); toast("Plus adăugat"); return; }
+  if(t.closest("#addNote")){ openPick("n"); return; }
+  if(t.closest("#addIns")){ openPick("i"); return; }
+  if(t.closest("#pickOk")){ addG({s:subjIdx,p:1}); toast("Însemnare adăugată"); return; }
   if(t.closest("#pickCancel")||t.id==="pick"){ $("pick").classList.remove("show"); return; }
-  if((el=t.closest("[data-n]"))){ grades.push({s:subjIdx,v:+el.getAttribute("data-n"),t:Date.now()}); saveG(); $("pick").classList.remove("show"); render(); toast("Nota "+el.getAttribute("data-n")+" a fost adăugată"); return; }
-  if((el=t.closest("[data-del]"))){ var ts=+el.getAttribute("data-del"); grades=grades.filter(function(g){return !(g.s===subjIdx&&g.t===ts)}); saveG(); render(); return; }
+  if((el=t.closest("[data-n]"))){ addG({s:subjIdx,v:+el.getAttribute("data-n")}); toast("Nota "+el.getAttribute("data-n")+" a fost adăugată"); return; }
+  if((el=t.closest("[data-del]"))){ var ts=+el.getAttribute("data-del"); grades=grades.filter(function(g){return !(g.s===subjIdx&&(g.i||g.t)===ts)}); saveG(); render(); return; }
   if(t.closest("#tgo")){ toast(OFFLINE); return; }
 });
 window.addEventListener("popstate",function(){ if(location.hash===""||location.hash==="#home"){ if(screen!=="home"){screen="home";render();} } applyHash(); });
