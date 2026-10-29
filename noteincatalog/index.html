@@ -131,10 +131,17 @@ body.dr #drawer{transform:none}
 #pick .nums button{height:52px;border:1px solid #cfd4dc;border-radius:12px;background:#fff;font:700 20px "DM Sans",sans-serif;color:var(--ink)}
 #pick .nums button:active{background:var(--red);color:#fff;border-color:var(--red)}
 #pick .btn.ghost{width:100%;margin-top:14px}
+.bar{flex:none;background:#fff}
+#bt{height:calc(32px + env(safe-area-inset-top,0px))}
+#bb{height:calc(26px + env(safe-area-inset-bottom,0px))}
+#drawer{top:32px;bottom:26px}
+.fab{bottom:56px}
+#toast{bottom:70px}
 </style>
 </head>
 <body>
 <div id="app">
+  <div class="bar" id="bt"></div>
   <header>
     <button class="ham" id="btnMenu" aria-label="Meniu"><i></i><i></i><i></i></button>
     <div class="brand">NoteInCatalog<span>.ro</span></div>
@@ -143,6 +150,7 @@ body.dr #drawer{transform:none}
     </button>
   </header>
   <main id="view"></main>
+  <div class="bar" id="bb"></div>
 </div>
 
 <div id="scrim"></div>
