@@ -132,11 +132,12 @@ body.dr #drawer{transform:none}
 #pick .nums button:active{background:var(--red);color:#fff;border-color:var(--red)}
 #pick .btn.ghost{width:100%;margin-top:14px}
 .bar{flex:none;background:#fff}
-#bt{height:calc(32px + env(safe-area-inset-top,0px))}
-#bb{height:calc(26px + env(safe-area-inset-bottom,0px))}
-#drawer{top:32px;bottom:26px}
-.fab{bottom:56px}
-#toast{bottom:70px}
+:root{--bt:max(env(safe-area-inset-top,0px),26px);--bb:10px}
+#bt{height:var(--bt)}
+#bb{height:var(--bb)}
+#drawer{top:var(--bt);bottom:var(--bb)}
+.fab{bottom:calc(var(--bb) + 24px)}
+#toast{bottom:calc(var(--bb) + 42px)}
 </style>
 </head>
 <body>
