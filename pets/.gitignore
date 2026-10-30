@@ -7,3 +7,4 @@ local.properties
 *.jks
 app/build/
 source_videos/
+dist/*.apk

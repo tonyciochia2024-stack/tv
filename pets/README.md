@@ -5,14 +5,14 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 
 | | |
 |---|---|
-| Package | `com.pets.desktoppets` · name **Pets** · v1.1.0 |
+| Package | `com.pets.desktoppets` · name **Pets** · v1.2.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
-| APKs | `dist/Pets-1.1.0-release.apk` (51 MB, signed with a local demo key) · `dist/Pets-1.1.0-debug.apk` (59 MB) |
+| APKs | `dist/Pets-1.2.0-release.apk` (132 MB, not committed: build it or get it from the chat) |
 
 ## Install
 ```
-adb install -r dist/Pets-1.1.0-release.apk        # or copy the APK to the phone and open it
+adb install -r dist/Pets-1.2.0-release.apk        # or copy the APK to the phone and open it
 ```
 First start: open **Pets → Show Pet**; if the overlay permission is missing the app explains it and opens the system
 screen *Display over other apps*. Return to the app (it re-checks on resume) and press **Show Pet** again.
@@ -27,6 +27,11 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * UI state reflects the real service/overlay (`PetState`), never a saved flag alone: *Active / Starting / Hidden / Pet stopped*.
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
+
+## New in 1.2.0
+* Re-matted at full 1080 px source resolution with a new outline-bounded matte (no more soft glow halo around characters), foreground colours re-estimated, floating specks removed.
+* Output 480 px high (was 360) at **30 fps** (was 15); cut-off frame edges are feathered so the pet fades out instead of ending in a hard line.
+* Glow hearts on Characters 24/25 reduced (not fully removed). Not run on a device in this session; verified by inspecting the QA sheets.
 
 ## New in 1.1.0
 * **Pet never blocks the app**: while the Pets UI is open the overlay lets touches through (`FLAG_NOT_TOUCHABLE`), so a big pet can no longer swallow taps meant for the controls under it. It is draggable again as soon as you leave the app.

@@ -1,13 +1,10 @@
 {
- "char02": "Thin purple stripe remnant at the right edge of some close-up frames.",
- "char03": "Blue-on-blue: a few hair strands near the right wing are slightly soft; frilled skirt is cut by the video frame (inherent).",
- "char06": "Faint grey smear in the last few close-up frames (transition effect in source).",
- "char07": "Ghost layer + drop shadow removed. Tail-loop interior stays filled; thin red stripe sliver at the right edge in some close-ups; pale fingertips occasionally trimmed.",
- "char10": "Ghost layer removed. Small pink/magenta stripe fragments at the bottom-left in mid-shots; pale fingertips occasionally trimmed.",
- "char11": "Ghost layer removed. Small red stripe fragment at the right edge in some close-ups; pale fingertips occasionally trimmed.",
- "char14": "Small pink stripe sliver at bottom-left in some mid-shot frames.",
- "char18": "One cyan stripe triangle at the right edge in a single close-up frame.",
- "char19": "Small cyan stripe patch at lower-left in some mid-shot frames.",
- "char24": "Stripe removed by colour; glow/heart sparkles are part of the source animation and are kept (some float free of the character).",
- "char25": "Glow/heart sparkles are part of the source animation and are kept."
+ "char02": "Small purple stripe wedge at the right edge of some close-up frames.",
+ "char03": "Blue-on-blue: the blue stripe wedge is feathered but visible at the lower right of some close-ups.",
+ "char07": "Ghost layer removed; thin red stripe sliver at the right edge in some close-ups.",
+ "char08": "Dark stripe fragment at the top right of mid-shot frames.",
+ "char10": "Pink stripe fragment at the bottom-left of mid-shot frames.",
+ "char18": "A cyan wing-shaped stripe triangle appears in a few close-up frames.",
+ "char24": "Baked-in glow hearts/sparkles are reduced but not fully removed (yellow ones remain).",
+ "char25": "Baked-in glow hearts/sparkles are reduced but not fully removed (yellow ones remain)."
 }

@@ -139,6 +139,50 @@ def wedge_mask(rgb: np.ndarray, colors, tol: float = 55.0, min_area: int = 1200)
     return cv2.dilate(out, np.ones((5, 5), np.uint8))
 
 
+K = lambda n: cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * n + 1, 2 * n + 1))
+
+
+def blur(x, r):
+    return cv2.GaussianBlur(x, (0, 0), r)
+
+
+
+def nearest_bg(img, a0, margin=9):
+    """Per-pixel colour of the nearest *definitely background* pixel (white, cream or a stripe colour)."""
+    h,w=a0.shape
+    far=cv2.erode((a0<0.03).astype(np.uint8),K(margin))          # background, well away from the character
+    if far.sum()<200: return np.ones_like(img)
+    src=(far==0).astype(np.uint8)                                  # zeros = background samples
+    _,labels=cv2.distanceTransformWithLabels(src,cv2.DIST_L2,5,labelType=cv2.DIST_LABEL_PIXEL)
+    coords=np.flatnonzero(far.reshape(-1))
+    smooth=blur(img,1.5).reshape(-1,3)
+    return smooth[coords[np.clip(labels-1,0,len(coords)-1)]].reshape(h,w,3)
+
+def refine_alpha(img, a0, tau=0.12, close=1, guard=3, keep_interior=5):
+    """img float RGB 0..1 (full resolution), a0 network alpha 0..1 -> crisp alpha bounded by the outline."""
+    h,w=a0.shape
+    B=nearest_bg(img,a0)
+    dist=np.sqrt(((img-B)**2).sum(2)/3)
+    cand=cv2.dilate((a0>0.25).astype(np.uint8),K(guard))
+    ink=((dist>tau)&(cand>0)).astype(np.uint8)
+    ink=cv2.morphologyEx(ink,cv2.MORPH_CLOSE,K(close))
+    edge=np.zeros_like(ink); edge[0,:]=edge[-1,:]=1; edge[:,0]=edge[:,-1]=1
+    ink=ink|((edge>0)&(a0>0.5)).astype(np.uint8)                   # frame border counts as closed where the character leaves the frame
+    inv=np.pad(1-ink,1,constant_values=1).astype(np.uint8)
+    cv2.floodFill(inv,np.zeros((h+4,w+4),np.uint8),(0,0),2)
+    hull=(inv[1:-1,1:-1]!=2)
+    interior=cv2.erode((a0>0.9).astype(np.uint8),K(keep_interior))>0   # leaks: keep the deep interior regardless
+    region=(hull|interior)&(cand>0)
+    region=region.astype(np.uint8)
+    # drop crumbs that the network does not support
+    n,lab,st,_=cv2.connectedComponentsWithStats(region,connectivity=8)
+    keep=np.zeros(n,bool)
+    for i in range(1,n):
+        if st[i,cv2.CC_STAT_AREA]>=max(40,0.00015*h*w) and a0[lab==i].max()>0.6: keep[i]=True
+    region=keep[lab].astype(np.float32)
+    return np.clip(blur(region,0.55)*1.08-0.04,0,1)                # ~1px anti-aliased edge
+
+
 def matte_frame(seg: Segmenter, rgb: np.ndarray, ghost: bool = False, refine_r: int = 3, gate: int = 3,
                 lo: float = 0.12, hi: float = 0.92, bg_colors=None) -> np.ndarray:
     """Return RGBA uint8 (straight alpha) for one frame."""
@@ -157,10 +201,17 @@ def matte_frame(seg: Segmenter, rgb: np.ndarray, ghost: bool = False, refine_r: 
         a0 = seg(clean) * cv2.GaussianBlur(tight, (0, 0), 1.2)
     if bg_colors:
         a0 = a0 * (1.0 - cv2.GaussianBlur(wedge_mask(rgb, bg_colors).astype(np.float32), (0, 0), 1.0))
-    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255.0
-    a1 = np.clip(guided_filter(gray, a0, refine_r, 1e-3), 0, 1)
-    a = np.clip((a1 - lo) / (hi - lo), 0, 1)
-    F = estimate_foreground(rgb, a)
+    a = refine_alpha(rgb.astype(np.float32) / 255.0, a0)
+    # keep the character, drop floating sparkles / crumbs (components far smaller than the main body)
+    m = (a > 0.5).astype(np.uint8)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(m, connectivity=8)
+    if n > 2:
+        big = st[1:, cv2.CC_STAT_AREA].max()
+        keep = np.zeros(n, bool)
+        keep[1:] = st[1:, cv2.CC_STAT_AREA] >= 0.04 * big
+        a = a * cv2.dilate(keep[lab].astype(np.uint8), K(3)).astype(np.float32)
+    from pymatting import estimate_foreground_ml
+    F = np.clip(estimate_foreground_ml(rgb.astype(np.float64) / 255.0, a.astype(np.float64)), 0, 1)
     out = np.dstack([(F * 255 + 0.5).astype(np.uint8), (a * 255 + 0.5).astype(np.uint8)])
     out[out[..., 3] == 0, :3] = 0
     return out

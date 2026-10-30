@@ -32,7 +32,7 @@ import pets_matte as pm  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 MODEL = os.environ.get("PETS_SEG_MODEL", str(ROOT / "tools" / "models" / "isnetis.onnx"))
-WORK_W = 720  # working width for matting (never upscaled)
+WORK_W = 1080  # working width for matting (never upscaled)
 
 
 def char_id(n: int) -> str:
@@ -197,6 +197,46 @@ def remove_dust(frames: np.ndarray, min_frac: float = 0.0002):
     return out, removed
 
 
+def despark(frames: np.ndarray, radius: int = 9, thr: float = 0.16):
+    """Remove small bright glow / sparkle blobs painted over the character (flagged clips only):
+    pixels much brighter than their local median and nearly white-hot are replaced by that median."""
+    out = frames.copy()
+    k = 2 * radius + 1
+    for t in range(len(frames)):
+        rgb = np.ascontiguousarray(frames[t][..., :3])
+        a = frames[t][..., 3] > 128
+        med = cv2.medianBlur(rgb, k if k % 2 else k + 1)
+        v = rgb.max(2).astype(np.float32) / 255
+        vm = med.max(2).astype(np.float32) / 255
+        glow = (v - vm > thr) & (v > 0.85) & a
+        glow = cv2.dilate(glow.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+        glow &= a
+        out[t][..., :3][glow] = med[glow]
+    return out
+
+
+def feather_cut_edges(crop: np.ndarray, frac: float = 0.07):
+    """Where the character is cut off by the video frame (opaque pixels on the crop border in most frames),
+    fade alpha out over `frac` of the size so the pet does not end in a hard straight line."""
+    n, h, w = crop.shape[:3]
+    out = crop
+    def ramp(L):
+        r = max(4, int(L * frac))
+        t = np.clip(np.arange(r, dtype=np.float32) / r, 0, 1)
+        return t * t * (3 - 2 * t), r
+    cuts = {"bottom": (crop[:, -3:, :, 3] > 200).mean(), "left": (crop[:, :, :3, 3] > 200).mean(),
+            "right": (crop[:, :, -3:, 3] > 200).mean()}
+    a = out[..., 3].astype(np.float32)
+    if cuts["bottom"] > 0.15:
+        f, r = ramp(h); a[:, h - r:, :] *= f[::-1][None, :, None]
+    if cuts["left"] > 0.15:
+        f, r = ramp(w); a[:, :, :r] *= f[None, None, :]
+    if cuts["right"] > 0.15:
+        f, r = ramp(w); a[:, :, w - r:] *= f[::-1][None, None, :]
+    out[..., 3] = a.astype(np.uint8)
+    return out
+
+
 def deflicker(rgba: np.ndarray) -> np.ndarray:
     """Remove single-frame alpha spikes: a pixel whose neighbours (t-1, t+1) agree but
     which itself deviates strongly is replaced by their mean. Real motion is untouched."""
@@ -254,6 +294,8 @@ def finalize_character(job):
     if (out / "info.json").exists():
         return cid, "skip"
     frames, meta = load_cached(Path(cache) / cid)
+    if cfgc.get("despark"):
+        frames = despark(frames)
     frames, wedge_px = remove_wedges(frames) if cfgc.get("wedge_cleanup") else (frames, 0)
     frames, dust_px = remove_dust(frames)
     frames, fixed = deflicker(frames)
@@ -264,7 +306,8 @@ def finalize_character(job):
     pad = 3
     y0, y1 = max(0, ys.min() - pad), min(alpha.shape[1], ys.max() + 1 + pad)
     x0, x1 = max(0, xs.min() - pad), min(alpha.shape[2], xs.max() + 1 + pad)
-    crop = frames[:, y0:y1, x0:x1]
+    crop = frames[:, y0:y1, x0:x1].copy()
+    crop = feather_cut_edges(crop)
     ch, cw = crop.shape[1:3]
     scale = height / ch
     size = (max(2, int(round(cw * scale / 2) * 2)), height)
@@ -321,7 +364,7 @@ def cmd_finalize(a):
         tag = f"{v['key']}:{ci}"
         if only and tag not in only and char_id(n) not in only:
             continue
-        jobs.append((n, {**c, "wedge_cleanup": v.get("wedge_cleanup", False)}, a.cache, a.out, a.height, a.quality, cfg["fps"]))
+        jobs.append((n, {**c, "wedge_cleanup": v.get("wedge_cleanup", False), "despark": v.get("despark", False)}, a.cache, a.out, a.height, a.quality, cfg["fps"]))
     with ProcessPoolExecutor(a.workers) as ex:
         for cid, msg in ex.map(finalize_character, jobs):
             print(cid, msg, flush=True)
@@ -340,7 +383,7 @@ def main():
     f.add_argument("--cache", default=str(ROOT / "build" / "cache"))
     f.add_argument("--out", default=str(ROOT / "build" / "out"))
     f.add_argument("--only", nargs="*")
-    f.add_argument("--height", type=int, default=360)
+    f.add_argument("--height", type=int, default=480)
     f.add_argument("--quality", type=int, default=72)
     f.add_argument("--workers", type=int, default=2)
     a = ap.parse_args()
