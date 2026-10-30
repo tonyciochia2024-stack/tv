@@ -47,6 +47,7 @@ class PetView(context: Context) : View(context) {
         canvas.drawBitmap(b, null, dst, paint)
     }
 
+    @android.annotation.SuppressLint("ClickableViewAccessibility")   // decorative: there is deliberately no click action
     override fun onTouchEvent(e: MotionEvent): Boolean {
         when (e.actionMasked) {
             MotionEvent.ACTION_DOWN -> { downX = e.rawX; downY = e.rawY; dragging = false }

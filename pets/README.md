@@ -5,14 +5,14 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 
 | | |
 |---|---|
-| Package | `com.pets.desktoppets` · name **Pets** · v1.0.0 |
+| Package | `com.pets.desktoppets` · name **Pets** · v1.1.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
-| APKs | `dist/Pets-1.0.0-release.apk` (50 MB, signed with a local demo key) · `dist/Pets-1.0.0-debug.apk` (61 MB) |
+| APKs | `dist/Pets-1.1.0-release.apk` (51 MB, signed with a local demo key) · `dist/Pets-1.1.0-debug.apk` (59 MB) |
 
 ## Install
 ```
-adb install -r dist/Pets-1.0.0-release.apk        # or copy the APK to the phone and open it
+adb install -r dist/Pets-1.1.0-release.apk        # or copy the APK to the phone and open it
 ```
 First start: open **Pets → Show Pet**; if the overlay permission is missing the app explains it and opens the system
 screen *Display over other apps*. Return to the app (it re-checks on resume) and press **Show Pet** again.
@@ -27,6 +27,16 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * UI state reflects the real service/overlay (`PetState`), never a saved flag alone: *Active / Starting / Hidden / Pet stopped*.
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
+
+## New in 1.1.0
+* **Pet never blocks the app**: while the Pets UI is open the overlay lets touches through (`FLAG_NOT_TOUCHABLE`), so a big pet can no longer swallow taps meant for the controls under it. It is draggable again as soon as you leave the app.
+* **Opacity** slider (30–100 %) and live size slider (writes are debounced instead of one per slider tick).
+* **Surprise me**: optional random character each time you tap *Show Pet*.
+* **Favourites** (heart on each card) with an *All / Favourites* filter.
+* **Quick Settings tile** "Desktop pet": show/hide from the notification shade (same rules as the buttons; opens the app if the overlay permission is missing).
+* **Dark theme** (follows the system), a dismissible first-run guide, content descriptions for the animated previews.
+* Geometry/placement maths extracted into pure functions with **JVM unit tests** (`./gradlew :app:testDebugUnitTest`, 6 tests).
+* Matte pipeline: isolated specks (stripe crumbs / noise) are removed in the finalize stage.
 
 ## Permissions
 | Permission | Why |
@@ -57,7 +67,12 @@ Processed characters are already in `app/src/main/assets/pets`. To (re)create th
 `REPORT.md` per-character processing report · `branding/icon_source.jpg` the supplied chibi image (launcher icon source).
 
 ## Verification status – read this
-Tested on an **Android 11 (API 30) x86 emulator running without hardware acceleration** (very slow; the system restarted a few times), release APK:
+**v1.1.0 additions** (touch pass-through while the app is open, opacity, shuffle, favourites, Quick Settings tile, dark theme, onboarding, monochrome icon):
+verified by **compilation, 6 JVM unit tests (placement maths) and Android lint (0 errors)** only. I tried to re-run the emulator checks, but the freshly wiped
+no-KVM emulator kept restarting its system server during boot (StorageStatsService race) and never accepted an install, so **these features have not been run on a device**.
+Treat the table below as results for the **v1.0.0 build** – the drag/size/boot/kill/revocation code paths are unchanged in 1.1.0 except for the additions above.
+
+Tested (v1.0.0 build) on an **Android 11 (API 30) x86 emulator running without hardware acceleration** (very slow; the system restarted a few times), release APK:
 
 | Check | Result |
 |---|---|
@@ -75,7 +90,7 @@ Tested on an **Android 11 (API 30) x86 emulator running without hardware acceler
 | Rotation → placement recomputed | ✅ window coordinates changed and returned (launcher itself did not rotate) |
 | No INTERNET permission, no ad/analytics classes | ✅ manifest + dex inspected |
 | Memory: PSS flat at ~36 MB over 8 min of animation | ✅ emulator numbers only |
-| Launcher icon visually in the app drawer | ⚠️ not captured; resources inspected (adaptive icon built from the supplied image) |
+| Launcher icon visually in the app drawer | ⚠️ not captured; resources inspected (adaptive icon built from the supplied image, plus a monochrome themed-icon layer in 1.1.0) |
 | Real devices, OEM battery managers, real reboot, Android 12–15 foreground-start rules, CPU/battery draw, frame-rate smoothness | ❌ **untested** |
 
 ## Known limitations

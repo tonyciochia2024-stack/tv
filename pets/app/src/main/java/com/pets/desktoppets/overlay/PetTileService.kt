@@ -58,6 +58,7 @@ class PetTileService : TileService() {
         }
     }
 
+    @android.annotation.SuppressLint("StartActivityAndCollapseDeprecated")   // Intent overload only used below API 34
     @Suppress("DEPRECATION")
     private fun openApp() {
         val i = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

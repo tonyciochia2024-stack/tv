@@ -27,6 +27,22 @@ for name, m in dens.items():
     canvas(round(108 * m), 72 / 108).save(d / "ic_launcher_foreground.png")     # adaptive layer (art in 72dp safe zone)
     canvas(round(48 * m), 0.96).save(d / "ic_launcher.png")                      # legacy square
     canvas(round(48 * m), 0.96).save(d / "ic_launcher_round.png")
+# Monochrome layer for Android 13+ themed icons: alpha = darkness of the artwork (hair, eyes, outlines),
+# light skin/background and the pale ground shadow become transparent.
+import cv2
+gray = np.asarray(src.convert("L")).astype(np.float32)
+dark = np.clip((float(np.median(gray[:20])) - gray - 55.0) * 2.4, 0, 255)
+dark = cv2.GaussianBlur(dark, (0, 0), 1.2)
+dark_img = Image.fromarray(dark.astype(np.uint8))
+for name, m in dens.items():
+    px = round(108 * m)
+    c = Image.new("L", (px, px), 0)
+    k = px * (72 / 108) / max(src.size)
+    art = dark_img.resize((round(src.width * k), round(src.height * k)), Image.LANCZOS)
+    c.paste(art, ((px - art.width) // 2, (px - art.height) // 2))
+    out = Image.new("RGBA", (px, px), (0, 0, 0, 0))
+    out.putalpha(c)
+    out.save(RES / f"mipmap-{name}" / "ic_launcher_monochrome.png")
 (RES / "values").mkdir(parents=True, exist_ok=True)
 (RES / "values" / "ic_launcher_background.xml").write_text(
     '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#%02X%02X%02X</color>\n</resources>\n' % bg)
@@ -35,7 +51,8 @@ for n in ("ic_launcher", "ic_launcher_round"):
     (RES / "mipmap-anydpi-v26" / f"{n}.xml").write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
         '    <background android:drawable="@color/ic_launcher_background"/>\n'
-        '    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n')
+        '    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n'
+        '    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>\n</adaptive-icon>\n')
 # in-app branding image (square, light)
 d = RES / "drawable-nodpi"; d.mkdir(parents=True, exist_ok=True)
 canvas(512, 1.0).save(d / "brand_chibi.png")
