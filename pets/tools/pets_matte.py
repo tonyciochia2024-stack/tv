@@ -183,27 +183,69 @@ def refine_alpha(img, a0, tau=0.12, close=1, guard=3, keep_interior=5):
     return np.clip(blur(region,0.55)*1.08-0.04,0,1)                # ~1px anti-aliased edge
 
 
-def matte_frame(seg: Segmenter, rgb: np.ndarray, ghost: bool = False, refine_r: int = 3, gate: int = 3,
-                lo: float = 0.12, hi: float = 0.92, bg_colors=None) -> np.ndarray:
-    """Return RGBA uint8 (straight alpha) for one frame."""
+def model_alpha(seg: Segmenter, rgb: np.ndarray, ghost: bool = False, gate: int = 3, bg_colors=None) -> np.ndarray:
+    """Slow step (neural net). Returns float32 alpha HxW. Cache this; finish_alpha() is cheap and tunable."""
     a0 = seg(rgb)
     if ghost:
-        # Pass 1 found the sharp layer's region; whiten everything farther than
-        # `reach` px from it (ghost copy, coloured wedges) and segment again so the
-        # network sees an ordinary character-on-white shot and recovers pale hands.
+        # Pass 1 found the sharp layer; whiten everything far from it (ghost copy, coloured wedges)
+        # and segment again so the network sees an ordinary character-on-white shot.
         reach = max(6, int(round(rgb.shape[1] * 0.017)))
         region = ghost_mask(rgb, a0)
-        near = cv2.dilate(region, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * reach + 1, 2 * reach + 1)))
+        near = cv2.dilate(region, K(reach))
         near = cv2.GaussianBlur(near, (0, 0), 2.0)[..., None]
         clean = (rgb * near + 255.0 * (1 - near)).astype(np.uint8)
-        # Final gate hugs the sharp layer so faint drop-shadow / ghost residue forms no pale fringe.
-        tight = cv2.dilate(region, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * gate + 1, 2 * gate + 1)))
+        tight = cv2.dilate(region, K(gate))
         a0 = seg(clean) * cv2.GaussianBlur(tight, (0, 0), 1.2)
     if bg_colors:
         a0 = a0 * (1.0 - cv2.GaussianBlur(wedge_mask(rgb, bg_colors).astype(np.float32), (0, 0), 1.0))
-    a = refine_alpha(rgb.astype(np.float32) / 255.0, a0)
-    # keep the character, drop floating sparkles / crumbs (components far smaller than the main body)
-    m = (a > 0.5).astype(np.uint8)
+    return a0.astype(np.float32)
+
+
+def flood_alpha(img, a0, flat_tau=0.07, fringe_tau=0.30, fringe_px=2, guard=4):
+    """Crisp alpha from a flat-coloured background.
+
+    Background = connected regions whose colour equals the nearest confident background colour (white,
+    cream or a stripe colour) and that the network mostly calls background. Everything enclosed by
+    line-art stays solid even if it is pale (white hair, gloves, ribbons) - the network's weak spot.
+    """
+    h, w = a0.shape
+    B = nearest_bg(img, a0)
+    dist = np.sqrt(((img - B) ** 2).sum(2) / 3)
+    flat = (dist < flat_tau).astype(np.uint8)
+    seed = (flat > 0) & (a0 < 0.15)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(flat, connectivity=4)
+    seed_cnt = np.bincount(lab[seed], minlength=n)
+    bg_comp = np.zeros(n, bool)
+    bg_comp[1:] = seed_cnt[1:] > 0.5 * st[1:, cv2.CC_STAT_AREA]
+    bg = bg_comp[lab]
+    cand = cv2.dilate((a0 > 0.3).astype(np.uint8), K(guard)) > 0
+    fg = cand & ~bg
+    # strip the blended fringe next to the background (not the dark outline itself)
+    near_bg = cv2.dilate(bg.astype(np.uint8), K(fringe_px)) > 0
+    fg &= ~(near_bg & (dist < fringe_tau) & (a0 < 0.9))
+    fg = fg.astype(np.uint8)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(fg, connectivity=8)
+    keep = np.zeros(n, bool)
+    for i in range(1, n):
+        if st[i, cv2.CC_STAT_AREA] >= max(40, 0.00015 * h * w) and a0[lab == i].max() > 0.6:
+            keep[i] = True
+    return keep[lab].astype(np.float32)
+
+
+def finish_alpha(rgb: np.ndarray, a0: np.ndarray, fill_holes: bool = False) -> np.ndarray:
+    """Cheap step: model alpha + video frame -> RGBA uint8."""
+    img = rgb.astype(np.float32) / 255.0
+    fg = flood_alpha(img, a0)
+    if fill_holes:   # ghost clips: pale gloves/skin next to the ghost copy get mistaken for background
+        h, w = fg.shape
+        inv = (fg < 0.5).astype(np.uint8)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(inv, connectivity=4)
+        for i in range(1, n):
+            x, y, bw, bh, ar = st[i]
+            if ar < 0.012 * h * w and x > 0 and y > 0 and x + bw < w and y + bh < h:
+                fg[lab == i] = 1.0
+    a = np.clip(blur(fg, 0.6) * 1.1 - 0.05, 0, 1)
+    m = (a > 0.5).astype(np.uint8)          # drop floating sparkles / crumbs far smaller than the body
     n, lab, st, _ = cv2.connectedComponentsWithStats(m, connectivity=8)
     if n > 2:
         big = st[1:, cv2.CC_STAT_AREA].max()
@@ -211,10 +253,14 @@ def matte_frame(seg: Segmenter, rgb: np.ndarray, ghost: bool = False, refine_r: 
         keep[1:] = st[1:, cv2.CC_STAT_AREA] >= 0.04 * big
         a = a * cv2.dilate(keep[lab].astype(np.uint8), K(3)).astype(np.float32)
     from pymatting import estimate_foreground_ml
-    F = np.clip(estimate_foreground_ml(rgb.astype(np.float64) / 255.0, a.astype(np.float64)), 0, 1)
+    F = np.clip(estimate_foreground_ml(img.astype(np.float64), a.astype(np.float64)), 0, 1)
     out = np.dstack([(F * 255 + 0.5).astype(np.uint8), (a * 255 + 0.5).astype(np.uint8)])
     out[out[..., 3] == 0, :3] = 0
     return out
+
+
+def matte_frame(seg, rgb, ghost=False, bg_colors=None):
+    return finish_alpha(rgb, model_alpha(seg, rgb, ghost, bg_colors=bg_colors), fill_holes=ghost)
 
 
 def composite(rgba: np.ndarray, bg=(40, 40, 60)) -> np.ndarray:

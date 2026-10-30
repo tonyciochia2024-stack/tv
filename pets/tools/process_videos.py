@@ -79,7 +79,13 @@ def matte_character(job):
         out = d / f"{i:04d}.png"
         if out.exists():
             continue
-        rgba = pm.matte_frame(seg, rgb, ghost=ghost, bg_colors=bgc)
+        a0f = d / f"a0_{i:04d}.png"
+        if a0f.exists():
+            a0 = cv2.imread(str(a0f), cv2.IMREAD_GRAYSCALE).astype(np.float32) / 255.0
+        else:
+            a0 = pm.model_alpha(seg, rgb, ghost=ghost, bg_colors=bgc)
+            cv2.imwrite(str(a0f), (a0 * 255 + 0.5).astype(np.uint8))
+        rgba = pm.finish_alpha(rgb, a0, fill_holes=ghost)
         cv2.imwrite(str(out), cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGRA), [cv2.IMWRITE_PNG_COMPRESSION, 1])
         done += 1
     (d / "meta.json").write_text(json.dumps({"frames": len(frames), "width": w, "height": h, "fps": fps}))
@@ -195,6 +201,47 @@ def remove_dust(frames: np.ndarray, min_frac: float = 0.0002):
             removed += int(kill.sum())
             out[t][..., 3][kill] = 0
     return out, removed
+
+
+def despark(frames: np.ndarray, radius: int = 9, thr: float = 0.16):
+    """Remove small bright glow / sparkle blobs painted over the character (flagged clips only):
+    pixels much brighter than their local median and nearly white-hot are replaced by that median."""
+    out = frames.copy()
+    k = 2 * radius + 1
+    for t in range(len(frames)):
+        rgb = np.ascontiguousarray(frames[t][..., :3])
+        a = frames[t][..., 3] > 128
+        med = cv2.medianBlur(rgb, k if k % 2 else k + 1)
+        v = rgb.max(2).astype(np.float32) / 255
+        vm = med.max(2).astype(np.float32) / 255
+        glow = (v - vm > thr) & (v > 0.85) & a
+        glow = cv2.dilate(glow.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+        glow &= a
+        out[t][..., :3][glow] = med[glow]
+    return out
+
+
+def feather_cut_edges(crop: np.ndarray, frac: float = 0.06):
+    """Per frame: where the character touches the crop border (cut by the video frame), fade alpha out
+    over `frac` of the size so the pet never ends in a hard straight line."""
+    n, h, w = crop.shape[:3]
+    out = crop
+    def ramp(L):
+        r = max(4, int(L * frac))
+        t = np.clip(np.arange(r, dtype=np.float32) / r, 0, 1)
+        return t * t * (3 - 2 * t), r
+    fb, rb = ramp(h); fw, rw = ramp(w)
+    for i in range(n):
+        al = out[i][..., 3]
+        a = al.astype(np.float32)
+        if (al[-2:, :] > 200).mean() > 0.04:
+            a[h - rb:, :] *= fb[::-1][:, None]
+        if (al[:, :2] > 200).mean() > 0.04:
+            a[:, :rw] *= fw[None, :]
+        if (al[:, -2:] > 200).mean() > 0.04:
+            a[:, w - rw:] *= fw[::-1][None, :]
+        out[i][..., 3] = a.astype(np.uint8)
+    return out
 
 
 def despark(frames: np.ndarray, radius: int = 9, thr: float = 0.16):
