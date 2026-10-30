@@ -1,0 +1,9 @@
+build/
+tools/models/*.onnx
+__pycache__/
+local.properties
+.gradle/
+*.keystore
+*.jks
+app/build/
+source_videos/

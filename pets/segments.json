@@ -1,0 +1,215 @@
+{
+ "fps": 15,
+ "videos": [
+  {
+   "key": "c01",
+   "file": "source_videos/Screen_Recording_20261029_220753_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.62,
+     "end": 10.16
+    },
+    {
+     "start": 11.07,
+     "end": 18.3
+    }
+   ]
+  },
+  {
+   "key": "c02",
+   "file": "source_videos/Screen_Recording_20261029_220824_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.54,
+     "end": 9.98
+    },
+    {
+     "start": 10.9,
+     "end": 18.55
+    }
+   ]
+  },
+  {
+   "key": "c03",
+   "file": "source_videos/Screen_Recording_20261029_220904_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.84,
+     "end": 10.4
+    },
+    {
+     "start": 11.3,
+     "end": 18.0
+    }
+   ]
+  },
+  {
+   "key": "c04",
+   "file": "source_videos/Screen_Recording_20261029_221001_TikTok.mp4",
+   "ghost": true,
+   "characters": [
+    {
+     "start": 0.05,
+     "end": 7.45
+    }
+   ]
+  },
+  {
+   "key": "c05",
+   "file": "source_videos/Screen_Recording_20261029_221031_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 2.79,
+     "end": 10.7
+    },
+    {
+     "start": 11.7,
+     "end": 19.15
+    }
+   ]
+  },
+  {
+   "key": "c06",
+   "file": "source_videos/Screen_Recording_20261029_221142_TikTok.mp4",
+   "ghost": true,
+   "characters": [
+    {
+     "start": 0.05,
+     "end": 7.4
+    }
+   ]
+  },
+  {
+   "key": "c07",
+   "file": "source_videos/Screen_Recording_20261029_221210_TikTok.mp4",
+   "ghost": true,
+   "characters": [
+    {
+     "start": 0.05,
+     "end": 7.45
+    }
+   ]
+  },
+  {
+   "key": "c08",
+   "file": "source_videos/Screen_Recording_20261029_221247_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.74,
+     "end": 10.18
+    },
+    {
+     "start": 11.1,
+     "end": 18.75
+    }
+   ]
+  },
+  {
+   "key": "c09",
+   "file": "source_videos/Screen_Recording_20261029_221322_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.8,
+     "end": 10.25
+    },
+    {
+     "start": 11.15,
+     "end": 18.85
+    }
+   ]
+  },
+  {
+   "key": "c10",
+   "file": "source_videos/Screen_Recording_20261029_221348_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.76,
+     "end": 10.22
+    },
+    {
+     "start": 11.15,
+     "end": 18.8
+    }
+   ]
+  },
+  {
+   "key": "c11",
+   "file": "source_videos/Screen_Recording_20261029_221421_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.82,
+     "end": 10.27
+    },
+    {
+     "start": 11.2,
+     "end": 18.85
+    }
+   ]
+  },
+  {
+   "key": "c12",
+   "file": "source_videos/Screen_Recording_20261029_221454_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.72,
+     "end": 10.16
+    },
+    {
+     "start": 11.1,
+     "end": 18.8
+    }
+   ]
+  },
+  {
+   "key": "c13",
+   "file": "source_videos/Screen_Recording_20261029_221523_TikTok.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 1.73,
+     "end": 10.18
+    },
+    {
+     "start": 11.1,
+     "end": 18.78
+    }
+   ]
+  },
+  {
+   "key": "c14",
+   "file": "source_videos/Screen_Recording_20261029_223904_CapCut.mp4",
+   "ghost": false,
+   "characters": [
+    {
+     "start": 3.3,
+     "end": 11.08
+    },
+    {
+     "start": 12.0,
+     "end": 19.77
+    }
+   ],
+   "bg_colors": [
+    [
+     70,
+     40,
+     252
+    ],
+    [
+     100,
+     100,
+     250
+    ]
+   ]
+  }
+ ]
+}

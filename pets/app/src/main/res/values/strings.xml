@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pets</string>
+    <string name="notif_channel_pet">Desktop pet</string>
+    <string name="notif_channel_pet_desc">Shown while your pet is on screen. Required by Android for overlays that keep running.</string>
+    <string name="notif_channel_restore">Pet restore</string>
+    <string name="notif_title">Your pet is on screen</string>
+    <string name="notif_text">Open Pets to change or hide it.</string>
+    <string name="notif_hide">Hide pet</string>
+    <string name="notif_restore_title">Tap to bring your pet back</string>
+    <string name="notif_restore_text">Android did not allow Pets to restart itself automatically.</string>
+</resources>
