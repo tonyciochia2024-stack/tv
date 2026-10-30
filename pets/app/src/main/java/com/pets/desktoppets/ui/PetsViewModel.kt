@@ -11,6 +11,7 @@ import com.pets.desktoppets.data.PetPrefs
 import com.pets.desktoppets.data.PetSettings
 import com.pets.desktoppets.overlay.PetOverlayService
 import com.pets.desktoppets.overlay.PetState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,7 @@ data class UiState(
     val error: String? = null,
 )
 
+@OptIn(FlowPreview::class)
 class PetsViewModel(app: Application) : AndroidViewModel(app) {
     val repo = CharacterRepository(app)
     private val prefs = PetPrefs(app)
@@ -58,10 +60,22 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
         return (ctx.getSystemService(Context.POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(ctx.packageName)
     }
 
+    // Sliders fire dozens of events per second: persist only the settled value (the overlay follows the store live).
+    private val sizeInput = MutableSharedFlow<Int>(extraBufferCapacity = 64)
+    private val opacityInput = MutableSharedFlow<Int>(extraBufferCapacity = 64)
+
+    init {
+        viewModelScope.launch { sizeInput.debounce(150).collect { prefs.setSize(it) } }
+        viewModelScope.launch { opacityInput.debounce(150).collect { prefs.setOpacity(it) } }
+    }
+
     fun showPet() = viewModelScope.launch {
         val ctx = getApplication<Application>()
         if (!PetOverlayService.canDrawOverlays(ctx)) return@launch
-        if (prefs.current().selectedId == null) repo.characters.firstOrNull()?.let { prefs.setSelected(it.id) }
+        val cur = prefs.current()
+        if (cur.shuffle && repo.characters.size > 1) {
+            repo.characters.filter { it.id != cur.selectedId }.random().let { prefs.setSelected(it.id) }   // "Surprise me"
+        } else if (cur.selectedId == null) repo.characters.firstOrNull()?.let { prefs.setSelected(it.id) }
         prefs.setWantActive(true)
         runCatching { PetOverlayService.start(ctx) }
     }
@@ -72,7 +86,11 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun select(c: CharacterInfo) = viewModelScope.launch { prefs.setSelected(c.id) }   // overlay follows live
-    fun setSize(dp: Int) = viewModelScope.launch { prefs.setSize(dp) }
+    fun setSize(dp: Int) { sizeInput.tryEmit(dp) }
+    fun setOpacity(percent: Int) { opacityInput.tryEmit(percent) }
+    fun setShuffle(v: Boolean) = viewModelScope.launch { prefs.setShuffle(v) }
+    fun toggleFavorite(c: CharacterInfo) = viewModelScope.launch { prefs.toggleFavorite(c.id) }
+    fun finishOnboarding() = viewModelScope.launch { prefs.setOnboardingDone() }
     fun resetPosition() = viewModelScope.launch { prefs.resetPosition() }
     fun setRestoreOnBoot(v: Boolean) = viewModelScope.launch { prefs.setRestoreOnBoot(v) }
 }

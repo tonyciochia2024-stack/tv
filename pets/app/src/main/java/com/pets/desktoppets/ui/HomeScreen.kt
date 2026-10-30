@@ -37,7 +37,7 @@ fun HomeScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Image(painterResource(R.drawable.brand_chibi), null, Modifier.size(48.dp).clip(CircleShape))
             Column {
-                Text("Pets", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, color = Hair)
+                Text("Pets", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, color = accent())
                 Text("Your little desktop companion", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -48,7 +48,7 @@ fun HomeScreen(
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         ) {
             Box(
-                Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Peach, Color(0xFFE7EEFF)))).padding(20.dp),
+                Modifier.fillMaxWidth().background(previewBrush()).padding(20.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 val c = ui.selected
@@ -57,6 +57,17 @@ fun HomeScreen(
                     PetAnimation(c, playing = true, fallback = vm.repo.thumb(c), modifier = Modifier.height(210.dp))
                     Spacer(Modifier.height(8.dp))
                     Text(c.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
+            }
+        }
+
+        if (!ui.settings.onboardingDone) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), shape = MaterialTheme.shapes.medium) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Welcome to Pets", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    Text("1. Pick a character in the Characters tab.\n2. Allow \"Display over other apps\" once.\n3. Tap Show Pet and go to your home screen.\n4. Drag your pet wherever you like. It only dances - tapping it does nothing.",
+                        style = MaterialTheme.typography.bodyMedium)
+                    TextButton(onClick = { vm.finishOnboarding() }) { Text("Got it") }
                 }
             }
         }

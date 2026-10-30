@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +22,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -33,21 +37,30 @@ import com.pets.desktoppets.data.CharacterInfo
 @Composable
 fun CharactersScreen(ui: UiState, vm: PetsViewModel, onSelectedGoHome: () -> Unit) {
     var previewing by rememberSaveable { mutableStateOf<String?>(null) }   // only one animation plays at a time
+    var onlyFavorites by rememberSaveable { mutableStateOf(false) }
+    val shown = if (onlyFavorites) ui.characters.filter { it.id in ui.settings.favorites } else ui.characters
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
-        Text("Characters", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Hair, modifier = Modifier.padding(start = 20.dp, top = 12.dp))
+        Text("Characters", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = accent(), modifier = Modifier.padding(start = 20.dp, top = 12.dp))
         Text("Tap a card to preview its animation, then pick your pet.", Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
             style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (ui.characters.isEmpty()) {
             Text("No characters available.", Modifier.padding(20.dp))
             return@Column
         }
+        Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(!onlyFavorites, { onlyFavorites = false }, label = { Text("All ${ui.characters.size}") })
+            FilterChip(onlyFavorites, { onlyFavorites = true }, label = { Text("Favourites ${ui.settings.favorites.size}") })
+        }
+        if (shown.isEmpty()) {
+            Text("No favourites yet. Tap the heart on a card to add one.", Modifier.padding(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         LazyVerticalGrid(
             GridCells.Fixed(2), contentPadding = PaddingValues(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(ui.characters, key = { it.id }) { c ->
+            items(shown, key = { it.id }) { c ->
                 CharacterCard(
-                    c, vm, selected = ui.selected?.id == c.id, playing = previewing == c.id,
+                    c, vm, favorite = c.id in ui.settings.favorites, selected = ui.selected?.id == c.id, playing = previewing == c.id,
                     onToggle = { previewing = if (previewing == c.id) null else c.id },
                     onSelect = { vm.select(c) },
                 )
@@ -58,8 +71,8 @@ fun CharactersScreen(ui: UiState, vm: PetsViewModel, onSelectedGoHome: () -> Uni
 }
 
 @Composable
-private fun CharacterCard(c: CharacterInfo, vm: PetsViewModel, selected: Boolean, playing: Boolean, onToggle: () -> Unit, onSelect: () -> Unit) {
-    val border by animateColorAsState(if (selected) Hair else Color.Transparent, label = "sel")
+private fun CharacterCard(c: CharacterInfo, vm: PetsViewModel, favorite: Boolean, selected: Boolean, playing: Boolean, onToggle: () -> Unit, onSelect: () -> Unit) {
+    val border by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent, label = "sel")
     val thumb = remember(c.id) { vm.repo.thumb(c) }
     Card(
         shape = MaterialTheme.shapes.medium, border = BorderStroke(3.dp, border),
@@ -69,12 +82,20 @@ private fun CharacterCard(c: CharacterInfo, vm: PetsViewModel, selected: Boolean
         Column(Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Box(
                 Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(16.dp))
-                    .background(Brush.verticalGradient(listOf(Peach, Color(0xFFE7EEFF)))),
+                    .background(previewBrush()),
                 contentAlignment = Alignment.Center,
             ) {
                 if (thumb == null && !playing) Text("Unavailable", color = MaterialTheme.colorScheme.error)
                 else PetAnimation(c, playing, thumb, Modifier.fillMaxHeight().padding(4.dp))
-                if (!playing && thumb != null) Icon(Icons.Default.PlayArrow, "Preview", Modifier.align(Alignment.BottomEnd).padding(6.dp).size(22.dp), tint = Navy.copy(alpha = 0.45f))
+                if (!playing && thumb != null) Icon(Icons.Default.PlayArrow, "Preview", Modifier.align(Alignment.BottomEnd).padding(6.dp).size(22.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f))
+                IconButton(
+                    onClick = { vm.toggleFavorite(c) },
+                    modifier = Modifier.align(Alignment.TopEnd).size(48.dp),
+                ) {
+                    Icon(if (favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        if (favorite) "Remove ${c.name} from favourites" else "Add ${c.name} to favourites",
+                        tint = MaterialTheme.colorScheme.primary)
+                }
             }
             Text(c.name, fontWeight = FontWeight.Bold)
             if (selected) {

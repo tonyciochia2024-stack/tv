@@ -9,4 +9,7 @@
     <string name="notif_hide">Hide pet</string>
     <string name="notif_restore_title">Tap to bring your pet back</string>
     <string name="notif_restore_text">Android did not allow Pets to restart itself automatically.</string>
+    <string name="tile_label">Desktop pet</string>
+    <string name="tile_on">Showing</string>
+    <string name="tile_off">Hidden</string>
 </resources>

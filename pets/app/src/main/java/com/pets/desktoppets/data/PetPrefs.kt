@@ -13,6 +13,7 @@ private val Context.store: DataStore<Preferences> by preferencesDataStore(name =
 const val DEFAULT_SIZE_DP = 160
 const val MIN_SIZE_DP = 80
 const val MAX_SIZE_DP = 320
+const val MIN_OPACITY = 30
 const val DEFAULT_FX = 0.92f
 const val DEFAULT_FY = 0.68f
 
@@ -25,6 +26,12 @@ data class PetSettings(
     val restoreOnBoot: Boolean = true,
     /** What the user last asked for. NOT proof the service runs - see PetState for the real state. */
     val wantActive: Boolean = false,
+    /** 30..100 %: how opaque the floating pet is. */
+    val opacity: Int = 100,
+    /** Pick a different random character every time the pet is shown. */
+    val shuffle: Boolean = false,
+    val favorites: Set<String> = emptySet(),
+    val onboardingDone: Boolean = false,
 )
 
 class PetPrefs(context: Context) {
@@ -37,6 +44,10 @@ class PetPrefs(context: Context) {
         val fy = floatPreferencesKey("pos_fy")
         val restore = booleanPreferencesKey("restore_on_boot")
         val want = booleanPreferencesKey("want_active")
+        val opacity = intPreferencesKey("opacity")
+        val shuffle = booleanPreferencesKey("shuffle")
+        val favorites = stringSetPreferencesKey("favorites")
+        val onboarding = booleanPreferencesKey("onboarding_done")
     }
 
     val flow: Flow<PetSettings> = store.data.map { p ->
@@ -47,6 +58,10 @@ class PetPrefs(context: Context) {
             fy = (p[K.fy] ?: DEFAULT_FY).coerceIn(0f, 1f),
             restoreOnBoot = p[K.restore] ?: true,
             wantActive = p[K.want] ?: false,
+            opacity = (p[K.opacity] ?: 100).coerceIn(MIN_OPACITY, 100),
+            shuffle = p[K.shuffle] ?: false,
+            favorites = p[K.favorites] ?: emptySet(),
+            onboardingDone = p[K.onboarding] ?: false,
         )
     }
 
@@ -57,4 +72,11 @@ class PetPrefs(context: Context) {
     suspend fun resetPosition() = setPosition(DEFAULT_FX, DEFAULT_FY)
     suspend fun setRestoreOnBoot(v: Boolean) = store.edit { it[K.restore] = v }
     suspend fun setWantActive(v: Boolean) = store.edit { it[K.want] = v }
+    suspend fun setOpacity(percent: Int) = store.edit { it[K.opacity] = percent.coerceIn(MIN_OPACITY, 100) }
+    suspend fun setShuffle(v: Boolean) = store.edit { it[K.shuffle] = v }
+    suspend fun setOnboardingDone() = store.edit { it[K.onboarding] = true }
+    suspend fun toggleFavorite(id: String) = store.edit {
+        val cur = it[K.favorites] ?: emptySet()
+        it[K.favorites] = if (id in cur) cur - id else cur + id
+    }
 }

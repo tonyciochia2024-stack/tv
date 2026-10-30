@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import com.pets.desktoppets.BuildConfig
 import com.pets.desktoppets.data.DEFAULT_SIZE_DP
 import com.pets.desktoppets.data.MAX_SIZE_DP
+import com.pets.desktoppets.data.MIN_OPACITY
 import com.pets.desktoppets.data.MIN_SIZE_DP
 import kotlin.math.roundToInt
 
@@ -26,25 +27,42 @@ import kotlin.math.roundToInt
 fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> Unit) {
     val ctx = LocalContext.current
     var size by remember(ui.settings.sizeDp) { mutableFloatStateOf(ui.settings.sizeDp.toFloat()) }
+    var opacity by remember(ui.settings.opacity) { mutableFloatStateOf(ui.settings.opacity.toFloat()) }
 
     Column(
         Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Hair)
+        Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = accent())
 
         Section("Pet size") {
             Text("${size.roundToInt()} dp tall (default $DEFAULT_SIZE_DP dp)", fontWeight = FontWeight.SemiBold)
             Slider(
-                value = size, onValueChange = { size = it },
-                onValueChangeFinished = { vm.setSize(size.roundToInt()) },   // the floating pet resizes live
+                value = size, onValueChange = { size = it; vm.setSize(it.roundToInt()) },   // the floating pet resizes live while dragging
                 valueRange = MIN_SIZE_DP.toFloat()..MAX_SIZE_DP.toFloat(),
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton({ size = DEFAULT_SIZE_DP.toFloat(); vm.setSize(DEFAULT_SIZE_DP) }, shape = RoundedCornerShape(14.dp)) { Text("Default size") }
                 OutlinedButton({ vm.resetPosition() }, shape = RoundedCornerShape(14.dp)) { Text("Reset position") }
             }
-            Text("Drag the pet with your finger to move it. Tapping it does nothing.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Drag the pet to move it (while Pets is open the pet lets touches through, so it never covers these controls). Tapping it does nothing.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+
+        Section("Look") {
+            Text("Opacity ${opacity.roundToInt()} %", fontWeight = FontWeight.SemiBold)
+            Slider(
+                value = opacity, onValueChange = { opacity = it; vm.setOpacity(it.roundToInt()) },
+                valueRange = MIN_OPACITY.toFloat()..100f,
+            )
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Surprise me", fontWeight = FontWeight.SemiBold)
+                    Text("Pick a different random character every time you tap Show Pet.", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(ui.settings.shuffle, { vm.setShuffle(it) })
+            }
+            Text("Tip: the Quick Settings tile \"Desktop pet\" shows or hides the pet from the notification shade.", style = MaterialTheme.typography.bodySmall)
         }
 
         Section("Restore after reboot") {
@@ -104,7 +122,7 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(shape = MaterialTheme.shapes.medium, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 17.sp, color = Eyes)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 17.sp, color = MaterialTheme.colorScheme.secondary)
             content()
         }
     }

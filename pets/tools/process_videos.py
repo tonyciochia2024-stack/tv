@@ -179,6 +179,24 @@ def remove_wedges(frames: np.ndarray, min_area_frac: float = 0.03):
     return out, removed
 
 
+def remove_dust(frames: np.ndarray, min_frac: float = 0.0002):
+    """Delete isolated specks of alpha (stripe crumbs, matting noise) smaller than min_frac of the frame."""
+    n, h, w = frames.shape[:3]
+    min_area = max(20, int(min_frac * h * w))
+    removed = 0
+    out = frames.copy()
+    for t in range(n):
+        m = (frames[t][..., 3] > 12).astype(np.uint8)
+        cnt, lab, st, _ = cv2.connectedComponentsWithStats(m, connectivity=8)
+        small = np.zeros(cnt, bool)
+        small[1:] = st[1:, cv2.CC_STAT_AREA] < min_area
+        kill = small[lab]
+        if kill.any():
+            removed += int(kill.sum())
+            out[t][..., 3][kill] = 0
+    return out, removed
+
+
 def deflicker(rgba: np.ndarray) -> np.ndarray:
     """Remove single-frame alpha spikes: a pixel whose neighbours (t-1, t+1) agree but
     which itself deviates strongly is replaced by their mean. Real motion is untouched."""
@@ -237,6 +255,7 @@ def finalize_character(job):
         return cid, "skip"
     frames, meta = load_cached(Path(cache) / cid)
     frames, wedge_px = remove_wedges(frames) if cfgc.get("wedge_cleanup") else (frames, 0)
+    frames, dust_px = remove_dust(frames)
     frames, fixed = deflicker(frames)
     alpha = frames[..., 3]
     # Union bounding box over the whole animation -> identical canvas for every frame.
@@ -289,7 +308,7 @@ def finalize_character(job):
     total = sum(len(b) for b in blobs)
     info = {"id": cid, "frames": len(blobs), "width": size[0], "height": size[1], "fps": fps,
             "crop": [int(x0), int(y0), int(x1), int(y1)], "source_size": [meta["width"], meta["height"]],
-            "bytes": total, "flicker_pixels_fixed": fixed, "wedge_pixels_removed": wedge_px, "offsets": offsets, "thumb_index": ti}
+            "bytes": total, "flicker_pixels_fixed": fixed, "dust_pixels_removed": dust_px, "wedge_pixels_removed": wedge_px, "offsets": offsets, "thumb_index": ti}
     (out / "info.json").write_text(json.dumps(info))
     return cid, f"{len(blobs)} frames {size[0]}x{size[1]} {total / 1e6:.2f} MB fixed={fixed}"
 

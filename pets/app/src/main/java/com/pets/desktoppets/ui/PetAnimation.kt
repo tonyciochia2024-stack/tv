@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.nativeCanvas
 import com.pets.desktoppets.data.CharacterInfo
 import com.pets.desktoppets.data.FramePack
@@ -44,7 +46,7 @@ fun PetAnimation(info: CharacterInfo, playing: Boolean, fallback: Bitmap?, modif
     }
 
     val shown = frame ?: fallback
-    Canvas(modifier.aspectRatio(info.aspect)) {
+    Canvas(modifier.aspectRatio(info.aspect).semantics { contentDescription = "${info.name} animation" }) {
         val b = shown ?: return@Canvas
         drawIntoCanvas { c ->
             c.nativeCanvas.drawBitmap(b, null, android.graphics.RectF(0f, 0f, size.width, size.height), null)

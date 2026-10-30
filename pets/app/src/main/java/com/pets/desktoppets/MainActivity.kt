@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pets.desktoppets.overlay.PetState
 import com.pets.desktoppets.ui.*
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         if (intent?.getBooleanExtra(EXTRA_RESUME_PET, false) == true) vm.showPet()   // tapped the "bring your pet back" notification
         setContent { PetsTheme { PetsApp(vm) } }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PetState.setAppInForeground(true)
+    }
+
+    override fun onPause() {
+        PetState.setAppInForeground(false)
+        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent) {

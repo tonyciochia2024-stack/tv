@@ -15,6 +15,11 @@ object PetState {
     val overlayAttached: StateFlow<Boolean> = _overlayAttached
     val error: StateFlow<String?> = _error
 
+    private val _appInForeground = MutableStateFlow(false)
+    /** True while the Pets UI is on screen: the pet then lets touches through so it never covers app controls. */
+    val appInForeground: StateFlow<Boolean> = _appInForeground
+    fun setAppInForeground(v: Boolean) { _appInForeground.value = v }
+
     internal fun setServiceRunning(v: Boolean) { _serviceRunning.value = v }
     internal fun setOverlayAttached(v: Boolean) { _overlayAttached.value = v }
     internal fun setError(v: String?) { _error.value = v }

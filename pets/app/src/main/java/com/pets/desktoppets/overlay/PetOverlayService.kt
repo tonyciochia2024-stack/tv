@@ -62,6 +62,7 @@ class PetOverlayService : LifecycleService() {
     private var params: WindowManager.LayoutParams? = null
     private var player: FramePlayer? = null
     private var settingsJob: Job? = null
+    private var touchJob: Job? = null
     private val appOps by lazy { getSystemService(AppOpsManager::class.java) }
     private val opListener = AppOpsManager.OnOpChangedListener { _, _ ->
         // The user revoked "Display over other apps" while the pet was shown: Android removes the window
@@ -155,6 +156,7 @@ class PetOverlayService : LifecycleService() {
 
         // Follow the preferences: character / size changes are applied live, no restart needed.
         settingsJob = lifecycleScope.launch { prefs.flow.collect { apply(it) } }
+        touchJob = lifecycleScope.launch { PetState.appInForeground.collect { setTouchable(!it) } }
         appOps.startWatchingMode(AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW, packageName, opListener)
         registerReceiver(screenReceiver, IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF); addAction(Intent.ACTION_SCREEN_ON); addAction(Intent.ACTION_USER_PRESENT)
@@ -170,6 +172,7 @@ class PetOverlayService : LifecycleService() {
         if (info == null) { PetState.setError("no_characters"); stopSelf(); return }
         val characterChanged = info.id != current?.id
         if (characterChanged) { current = info; player?.setCharacter(info) }
+        v.alpha = s.opacity / 100f
         if (characterChanged || s.sizeDp != sizeDp) {
             sizeDp = s.sizeDp
             val h = (sizeDp * resources.displayMetrics.density).roundToInt()
@@ -194,9 +197,20 @@ class PetOverlayService : LifecycleService() {
         }
     }
 
+    /** While the Pets UI is open the pet ignores touches so it can never cover (or swallow taps for) app controls. */
+    private fun setTouchable(touchable: Boolean) {
+        val lp = params ?: return
+        val v = view ?: return
+        val flag = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        val new = if (touchable) lp.flags and flag.inv() else lp.flags or flag
+        if (new == lp.flags) return
+        lp.flags = new
+        if (added) runCatching { wm.updateViewLayout(v, lp) }
+    }
+
     private fun placeFromFractions(fx: Float, fy: Float) {
         val lp = params ?: return
-        val (x, y) = fractionToXY(usableBounds(this, wm), lp.width, lp.height, fx, fy)
+        val (x, y) = fractionToXY(usableBounds(this, wm).toArea(), lp.width, lp.height, fx, fy)
         lp.x = x; lp.y = y; curX = x; curY = y
     }
 
@@ -223,16 +237,16 @@ class PetOverlayService : LifecycleService() {
         override fun onDragStart() { isDragging = true; dragStartX = curX; dragStartY = curY }
         override fun onDrag(dx: Int, dy: Int) {
             val lp = params ?: return
-            val b = usableBounds(this@PetOverlayService, wm)
-            curX = (dragStartX + dx).coerceIn(b.left, (b.right - lp.width).coerceAtLeast(b.left))
-            curY = (dragStartY + dy).coerceIn(b.top, (b.bottom - lp.height).coerceAtLeast(b.top))
+            val b = usableBounds(this@PetOverlayService, wm).toArea()
+            val (nx, ny) = clampToArea(b, lp.width, lp.height, dragStartX + dx, dragStartY + dy)
+            curX = nx; curY = ny
             lp.x = curX; lp.y = curY
             view?.let { runCatching { wm.updateViewLayout(it, lp) } }
         }
         override fun onDragEnd() {
             isDragging = false
             val lp = params ?: return
-            val (fx, fy) = xyToFraction(usableBounds(this@PetOverlayService, wm), lp.width, lp.height, curX, curY)
+            val (fx, fy) = xyToFraction(usableBounds(this@PetOverlayService, wm).toArea(), lp.width, lp.height, curX, curY)
             lastFx = fx; lastFy = fy
             lifecycleScope.launch { prefs.setPosition(fx, fy) }
         }
@@ -240,6 +254,7 @@ class PetOverlayService : LifecycleService() {
 
     override fun onDestroy() {
         settingsJob?.cancel()
+        touchJob?.cancel()
         runCatching { appOps.stopWatchingMode(opListener) }
         runCatching { unregisterReceiver(screenReceiver) }
         player?.release(); player = null
