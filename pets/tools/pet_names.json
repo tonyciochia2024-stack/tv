@@ -175,5 +175,71 @@
    "Sandrone (Genshin Impact)"
   ],
   "sure": true
+ },
+ "pet26": {
+  "name": "Halloween Kasane Teto",
+  "characters": [
+   "Kasane Teto (UTAU), Halloween"
+  ],
+  "sure": true
+ },
+ "pet27": {
+  "name": "Ichika Nakano",
+  "characters": [
+   "Ichika Nakano (The Quintessential Quintuplets)"
+  ],
+  "sure": true
+ },
+ "pet28": {
+  "name": "Asa & Hasu Yuki",
+  "characters": [
+   "Asa",
+   "Hasu Yuki"
+  ],
+  "sure": true
+ },
+ "pet29": {
+  "name": "Typhoeus & Fluorite",
+  "characters": [
+   "Typhoeus",
+   "Fluorite"
+  ],
+  "sure": true
+ },
+ "pet30": {
+  "name": "Si & Yvonne",
+  "characters": [
+   "Si",
+   "Yvonne"
+  ],
+  "sure": true
+ },
+ "pet31": {
+  "name": "Halloween Luno",
+  "characters": [
+   "Luno, Halloween"
+  ],
+  "sure": true
+ },
+ "pet32": {
+  "name": "Halloween Suoming",
+  "characters": [
+   "Suoming, Halloween"
+  ],
+  "sure": true
+ },
+ "pet33": {
+  "name": "Arknights: Endfield",
+  "characters": [
+   "Arknights: Endfield operator (name not identified)"
+  ],
+  "sure": false
+ },
+ "pet34": {
+  "name": "Furina II",
+  "characters": [
+   "Furina (Genshin Impact), devil and angel"
+  ],
+  "sure": true
  }
 }

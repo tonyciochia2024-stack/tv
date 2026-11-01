@@ -28,6 +28,9 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
 
+## New in 2.4.0
+* 9 more pets (26-34). Watermarks: "@noxelleanimation" (pet 26) and a signature (pet 27) were removed by cropping the bottom 7%. The creator-name banners ("yummyasa", "hasuyuki") inside the background art of pet 28 are left as they are part of the picture. 32 pets total.
+
 ## New in 2.3.0
 * 5 more pets (21-25: Citlali, Arlecchino & Hornet, Furina, Malfoid, Sandrone). Their sources had a baked-in mosaic over the lower third and a CapCut end card, so they are cropped (bottom 33%) and trimmed (`tools/video_opts.json`). 23 pets total.
 

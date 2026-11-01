@@ -362,6 +362,144 @@
    "characters": [
     "Sandrone (Genshin Impact)"
    ]
+  },
+  {
+   "id": "pet26",
+   "name": "Halloween Kasane Teto",
+   "video": "pets/pet26/loop.mp4",
+   "poster": "pets/pet26/poster.jpg",
+   "width": 1046,
+   "height": 722,
+   "durationMs": 18526,
+   "hasAudio": true,
+   "source": "20261101_112702.mp4",
+   "bytes": 13837976,
+   "characters": [
+    "Kasane Teto (UTAU), Halloween"
+   ]
+  },
+  {
+   "id": "pet27",
+   "name": "Ichika Nakano",
+   "video": "pets/pet27/loop.mp4",
+   "poster": "pets/pet27/poster.jpg",
+   "width": 1066,
+   "height": 750,
+   "durationMs": 15761,
+   "hasAudio": true,
+   "source": "20261101_112757.mp4",
+   "bytes": 9543049,
+   "characters": [
+    "Ichika Nakano (The Quintessential Quintuplets)"
+   ]
+  },
+  {
+   "id": "pet28",
+   "name": "Asa & Hasu Yuki",
+   "video": "pets/pet28/loop.mp4",
+   "poster": "pets/pet28/poster.jpg",
+   "width": 1070,
+   "height": 608,
+   "durationMs": 17709,
+   "hasAudio": true,
+   "source": "20261101_112838.mp4",
+   "bytes": 12303752,
+   "characters": [
+    "Asa",
+    "Hasu Yuki"
+   ]
+  },
+  {
+   "id": "pet29",
+   "name": "Typhoeus & Fluorite",
+   "video": "pets/pet29/loop.mp4",
+   "poster": "pets/pet29/poster.jpg",
+   "width": 1080,
+   "height": 800,
+   "durationMs": 18379,
+   "hasAudio": true,
+   "source": "20261101_112904.mp4",
+   "bytes": 15567180,
+   "characters": [
+    "Typhoeus",
+    "Fluorite"
+   ]
+  },
+  {
+   "id": "pet30",
+   "name": "Si & Yvonne",
+   "video": "pets/pet30/loop.mp4",
+   "poster": "pets/pet30/poster.jpg",
+   "width": 1080,
+   "height": 808,
+   "durationMs": 18357,
+   "hasAudio": true,
+   "source": "20261101_112929.mp4",
+   "bytes": 18255542,
+   "characters": [
+    "Si",
+    "Yvonne"
+   ]
+  },
+  {
+   "id": "pet31",
+   "name": "Halloween Luno",
+   "video": "pets/pet31/loop.mp4",
+   "poster": "pets/pet31/poster.jpg",
+   "width": 1080,
+   "height": 802,
+   "durationMs": 17931,
+   "hasAudio": true,
+   "source": "20261101_112956.mp4",
+   "bytes": 16135085,
+   "characters": [
+    "Luno, Halloween"
+   ]
+  },
+  {
+   "id": "pet32",
+   "name": "Halloween Suoming",
+   "video": "pets/pet32/loop.mp4",
+   "poster": "pets/pet32/poster.jpg",
+   "width": 1080,
+   "height": 808,
+   "durationMs": 18153,
+   "hasAudio": true,
+   "source": "20261101_113022.mp4",
+   "bytes": 11556499,
+   "characters": [
+    "Suoming, Halloween"
+   ]
+  },
+  {
+   "id": "pet33",
+   "name": "Arknights: Endfield",
+   "video": "pets/pet33/loop.mp4",
+   "poster": "pets/pet33/poster.jpg",
+   "width": 1080,
+   "height": 810,
+   "durationMs": 17476,
+   "hasAudio": true,
+   "source": "20261101_113102.mp4",
+   "bytes": 18074201,
+   "characters": [
+    "Arknights: Endfield operator (name not identified)"
+   ]
+  },
+  {
+   "id": "pet34",
+   "name": "Furina II",
+   "video": "pets/pet34/loop.mp4",
+   "poster": "pets/pet34/poster.jpg",
+   "width": 1080,
+   "height": 808,
+   "durationMs": 17583,
+   "hasAudio": true,
+   "source": "20261101_113125.mp4",
+   "bytes": 16262725,
+   "characters": [
+    "Furina (Genshin Impact), devil and angel"
+   ]
   }
  ]
 }

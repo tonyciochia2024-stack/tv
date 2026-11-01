@@ -12,8 +12,8 @@ android {
         applicationId = "com.pets.desktoppets"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "2.3.1"
+        versionCode = 11
+        versionName = "2.4.0"
     }
 
     signingConfigs {
