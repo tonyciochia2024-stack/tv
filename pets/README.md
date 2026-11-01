@@ -28,6 +28,9 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
 
+## New in 2.3.0
+* 5 more pets (21-25: Citlali, Arlecchino & Hornet, Furina, Malfoid, Sandrone). Their sources had a baked-in mosaic over the lower third and a CapCut end card, so they are cropped (bottom 33%) and trimmed (`tools/video_opts.json`). 23 pets total.
+
 ## New in 2.2.0
 * **Real names**: every pet is named after its characters (`tools/pet_names.json`, applied by `tools/apply_names.py`). Web search cannot match faces, so identification was by eye: names confirmed by the owner for all remaining pets; pets 08 and 09 were removed because their characters could not be identified. Fix any name in the JSON and re-run the script.
 * **Font**: the whole app uses **Liberation Serif**, the open-licence font that is metric-compatible with Times New Roman (Times New Roman itself is proprietary and cannot be bundled). License: `FONT_LICENSE.txt`.

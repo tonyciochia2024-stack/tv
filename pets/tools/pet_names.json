@@ -139,5 +139,41 @@
    "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
   ],
   "sure": true
+ },
+ "pet21": {
+  "name": "Citlali",
+  "characters": [
+   "Citlali (Genshin Impact)"
+  ],
+  "sure": true
+ },
+ "pet22": {
+  "name": "Arlecchino & Hornet",
+  "characters": [
+   "Arlecchino (Genshin Impact)",
+   "Hornet"
+  ],
+  "sure": true
+ },
+ "pet23": {
+  "name": "Furina",
+  "characters": [
+   "Furina (Genshin Impact)"
+  ],
+  "sure": true
+ },
+ "pet24": {
+  "name": "Malfoid",
+  "characters": [
+   "Malfoid (name as given by the owner; please confirm spelling)"
+  ],
+  "sure": true
+ },
+ "pet25": {
+  "name": "Sandrone",
+  "characters": [
+   "Sandrone (Genshin Impact)"
+  ],
+  "sure": true
  }
 }

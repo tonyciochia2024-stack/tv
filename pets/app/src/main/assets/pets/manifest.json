@@ -286,6 +286,82 @@
    "characters": [
     "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
    ]
+  },
+  {
+   "id": "pet21",
+   "name": "Citlali",
+   "video": "pets/pet21/loop.mp4",
+   "poster": "pets/pet21/poster.jpg",
+   "width": 1192,
+   "height": 600,
+   "durationMs": 17249,
+   "hasAudio": true,
+   "source": "20261101_110623.mp4",
+   "bytes": 18686459,
+   "characters": [
+    "Citlali (Genshin Impact)"
+   ]
+  },
+  {
+   "id": "pet22",
+   "name": "Arlecchino & Hornet",
+   "video": "pets/pet22/loop.mp4",
+   "poster": "pets/pet22/poster.jpg",
+   "width": 1180,
+   "height": 596,
+   "durationMs": 17249,
+   "hasAudio": true,
+   "source": "20261101_110718.mp4",
+   "bytes": 17163394,
+   "characters": [
+    "Arlecchino (Genshin Impact)",
+    "Hornet"
+   ]
+  },
+  {
+   "id": "pet23",
+   "name": "Furina",
+   "video": "pets/pet23/loop.mp4",
+   "poster": "pets/pet23/poster.jpg",
+   "width": 1208,
+   "height": 600,
+   "durationMs": 17249,
+   "hasAudio": true,
+   "source": "20261101_110803.mp4",
+   "bytes": 20481543,
+   "characters": [
+    "Furina (Genshin Impact)"
+   ]
+  },
+  {
+   "id": "pet24",
+   "name": "Malfoid",
+   "video": "pets/pet24/loop.mp4",
+   "poster": "pets/pet24/poster.jpg",
+   "width": 1166,
+   "height": 580,
+   "durationMs": 17249,
+   "hasAudio": true,
+   "source": "20261101_110849.mp4",
+   "bytes": 19317675,
+   "characters": [
+    "Malfoid (name as given by the owner; please confirm spelling)"
+   ]
+  },
+  {
+   "id": "pet25",
+   "name": "Sandrone",
+   "video": "pets/pet25/loop.mp4",
+   "poster": "pets/pet25/poster.jpg",
+   "width": 1170,
+   "height": 584,
+   "durationMs": 17249,
+   "hasAudio": true,
+   "source": "20261101_110953.mp4",
+   "bytes": 19179619,
+   "characters": [
+    "Sandrone (Genshin Impact)"
+   ]
   }
  ]
 }

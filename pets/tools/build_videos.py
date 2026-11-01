@@ -30,6 +30,7 @@ def probe(p):
     dur = min(float(v["duration"]), float(au["duration"])) if au else float(v["duration"])
     return int(v["width"]), int(v["height"]), dur, au is not None
 
+_opts = json.load(open(Path(__file__).resolve().parent / "video_opts.json")) if (Path(__file__).resolve().parent / "video_opts.json").exists() else {}
 files = sorted(Path(a.src).glob("*.mp4"), key=lambda p: re.search(r"(\d{8}_\d{6})", p.name).group(1))
 out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
 man = []
@@ -39,13 +40,21 @@ for i, f in enumerate(files, 1):
     w, h, T, has_a = probe(f)
     if a.only and pid not in a.only:
         continue
+    ts = re.search(r"(\d{8}_\d{6})", f.name).group(1)
+    o = _opts.get(ts, {})
+    crop = ""
+    if o.get("crop_bottom"):                         # e.g. a baked-in watermark mosaic along the bottom
+        h = int(h * (1 - o["crop_bottom"])) // 2 * 2
+        crop = f"crop={w}:{h}:0:0,"
+    if o.get("end"):                                 # e.g. cut a trailing end card
+        T = min(T, o["end"])
     up = w < 900
     sc = f"scale={w*2}:{h*2}:flags=lanczos,unsharp=5:5:0.6," if up else ""
     ow, oh = (w * 2, h * 2) if up else (w, h)
     ow, oh = ow // 2 * 2, oh // 2 * 2
     T = T - 0.05
     dst = out / pid; dst.mkdir(exist_ok=True)
-    base = f"[0:v]fps=30,{sc}scale={ow}:{oh},format=yuv420p,setsar=1,split=3[v1][v2][v3];"
+    base = f"[0:v]{crop}fps=30,{sc}scale={ow}:{oh},format=yuv420p,setsar=1,split=3[v1][v2][v3];"
     vf = (f"{base}[v1]trim=start={d}:end={T-d},setpts=PTS-STARTPTS[vm];"
           f"[v2]trim=start={T-d}:end={T},setpts=PTS-STARTPTS[vt];"
           f"[v3]trim=start=0:end={d},setpts=PTS-STARTPTS[vh];"
