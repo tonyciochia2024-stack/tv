@@ -42,6 +42,36 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
     ) {
         Text("Settings", style = shimmerTitle(36), modifier = Modifier.entrance(0, "settingsTitle"))
 
+        Section("Pet packs") {
+            val picker = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree()) { uri ->
+                if (uri != null) vm.importPacks(uri)
+            }
+            Text("Add more pets without a new app. Copy an unzipped pack folder to your phone, then tap Import and pick that folder (or a folder that holds several packs).",
+                style = MaterialTheme.typography.bodySmall, color = LocalPalette.current.muted)
+            val imp = ui.importing
+            if (imp != null && !imp.done) {
+                LinearProgressIndicator(progress = { imp.progress }, Modifier.fillMaxWidth())
+                Text("Copying… ${(imp.progress * 100).roundToInt()} %", style = MaterialTheme.typography.bodySmall)
+            } else {
+                Button({ picker.launch(null) }, shape = RoundedCornerShape(14.dp)) { Text("Import pets") }
+            }
+            if (imp?.done == true) {
+                Text(imp.message ?: "", fontWeight = FontWeight.SemiBold,
+                    color = if (imp.message?.startsWith("Imported") == true) Color(0xFF2E9E5B) else MaterialTheme.colorScheme.error)
+                TextButton({ vm.dismissImport() }) { Text("OK") }
+            }
+            ui.packs.forEach { pk ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(pk.name, fontWeight = FontWeight.Bold)
+                        Text("${pk.petCount} pets · ${pk.bytes / 1_000_000} MB", style = MaterialTheme.typography.bodySmall, color = LocalPalette.current.muted)
+                    }
+                    TextButton({ vm.removePack(pk.name) }) { Text("Remove") }
+                }
+            }
+            if (ui.packs.isEmpty()) Text("No packs imported yet.", style = MaterialTheme.typography.bodySmall)
+        }
+
         Section("Menu colors") {
             Text("Pick a look for the whole app. It changes live.", style = MaterialTheme.typography.bodySmall, color = LocalPalette.current.muted)
             PalettePicker(ui.settings.paletteId) { vm.setPalette(it) }

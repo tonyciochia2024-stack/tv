@@ -9,3 +9,4 @@ app/build/
 source_videos/
 dist/*.apk
 app/src/lite/
+dist/packs/

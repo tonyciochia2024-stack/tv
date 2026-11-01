@@ -12,8 +12,8 @@ android {
         applicationId = "com.pets.desktoppets"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "2.4.0"
+        versionCode = 12
+        versionName = "2.5.0"
     }
 
     signingConfigs {
@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-service:2.8.7")
     implementation("androidx.datastore:datastore-preferences:1.1.2")
     implementation("androidx.media3:media3-exoplayer:1.5.1")
+    implementation("androidx.documentfile:documentfile:1.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     testImplementation("junit:junit:4.13.2")
 }

@@ -19,6 +19,8 @@ enum class PetStatus { Active, Starting, Hidden, StoppedUnexpectedly }
 
 data class UiState(
     val characters: List<CharacterInfo> = emptyList(),
+    val packs: List<com.pets.desktoppets.data.PackInfo> = emptyList(),
+    val importing: ImportState? = null,
     val settings: PetSettings = PetSettings(),
     val selected: CharacterInfo? = null,
     val status: PetStatus = PetStatus.Hidden,
@@ -28,14 +30,18 @@ data class UiState(
 )
 
 @OptIn(FlowPreview::class)
+data class ImportState(val progress: Float, val message: String? = null, val done: Boolean = false)
+
 class PetsViewModel(app: Application) : AndroidViewModel(app) {
     val repo = CharacterRepository(app)
     private val prefs = PetPrefs(app)
+    private val packsVersion = MutableStateFlow(0)
+    private val importState = MutableStateFlow<ImportState?>(null)
     private val permission = MutableStateFlow(PetOverlayService.canDrawOverlays(app))
     private val battery = MutableStateFlow(isIgnoringBattery())
 
     val state: StateFlow<UiState> = combine(
-        listOf<Flow<*>>(prefs.flow, PetState.serviceRunning, PetState.overlayAttached, PetState.error, permission, battery),
+        listOf<Flow<*>>(prefs.flow, PetState.serviceRunning, PetState.overlayAttached, PetState.error, permission, battery, packsVersion, importState),
     ) { v ->
         val settings = v[0] as PetSettings
         val running = v[1] as Boolean
@@ -46,8 +52,8 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
             settings.wantActive -> PetStatus.StoppedUnexpectedly   // user wants it, but nothing is running
             else -> PetStatus.Hidden
         }
-        UiState(repo.characters, settings, repo.resolve(settings.selectedId), status, v[4] as Boolean, v[5] as Boolean, v[3] as String?)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState(characters = repo.characters))
+        UiState(repo.characters, repo.packs(), v[7] as ImportState?, settings, repo.resolve(settings.selectedId), status, v[4] as Boolean, v[5] as Boolean, v[3] as String?)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState(characters = repo.characters, packs = emptyList()))
 
     /** Call from ON_RESUME: permissions can change while the user is in system settings. */
     fun refreshSystemState() {
@@ -68,6 +74,24 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) { repo.characters.forEach { repo.poster(it) } }   // warm the poster cache
         viewModelScope.launch { sizeInput.debounce(150).collect { prefs.setSize(it) } }
         viewModelScope.launch { opacityInput.debounce(150).collect { prefs.setOpacity(it) } }
+    }
+
+    fun importPacks(tree: android.net.Uri) {
+        if (importState.value?.done == false) return
+        importState.value = ImportState(0f)
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val r = com.pets.desktoppets.data.PackImporter.import(getApplication(), tree) { c, t -> importState.value = ImportState(if (t > 0) c.toFloat() / t else 0f) }
+            repo.reload(); packsVersion.value++
+            repo.characters.forEach { repo.poster(it) }
+            importState.value = ImportState(1f, r.error ?: "Imported ${r.imported.size} pack(s).", done = true)
+        }
+    }
+
+    fun dismissImport() { importState.value = null }
+
+    fun removePack(name: String) = viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        com.pets.desktoppets.data.PackImporter.remove(getApplication(), name)
+        repo.reload(); packsVersion.value++
     }
 
     fun showPet() = viewModelScope.launch {

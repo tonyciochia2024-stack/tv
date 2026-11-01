@@ -168,6 +168,7 @@ class PetOverlayService : LifecycleService() {
     private fun apply(s: PetSettings) {
         val v = view ?: return
         val lp = params ?: return
+        if (s.selectedId != null && repo.byId(s.selectedId) == null) repo.reload()   // imported after this service started
         val info = repo.resolve(s.selectedId)
         if (info == null) { PetState.setError("no_characters"); stopSelf(); return }
         val characterChanged = info.id != current?.id

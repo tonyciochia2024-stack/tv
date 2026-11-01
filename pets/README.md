@@ -5,7 +5,7 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 
 | | |
 |---|---|
-| Package | `com.pets.desktoppets` · name **Pets** · v2.2.0 |
+| Package | `com.pets.desktoppets` · name **Pets** · v2.5.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
 | APKs | `dist/Pets-2.2.0-release.apk` (238 MB, not committed: build it or get it from the chat) |
@@ -27,6 +27,14 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * UI state reflects the real service/overlay (`PetState`), never a saved flag alone: *Active / Starting / Hidden / Pet stopped*.
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
+
+## New in 2.5.0: pet packs
+The APK now holds 32 pets; more can be added as **packs** (folders of looping videos) without rebuilding or reinstalling.
+* **Make a pack** (on the computer): `python3 tools/build_videos.py --src <folder of mp4s> --pack MyPack --first-id 35 --names names.json [--crop-bottom 0.07]`.
+  Output: `dist/packs/MyPack.zip` (split into `MyPack-part1.zip`, `-part2.zip` ... of at most 380 MB each). `names.json` is a list with one `{"name": "...", "characters": ["..."]}` per video in recording-time order.
+* **Use a pack** (on the phone): copy the zip to the phone, unzip it, open Pets > Settings > Pet packs > **Import pets**, and pick the unzipped folder (or a folder holding several packs). Files are copied into app storage (needs free space); no internet, no extra permission.
+* Imported pets show in the Pets tab after the bundled ones; **Remove** in Settings deletes a pack. Pack ids are `PackName/petNN`, so keep pack folder names unique.
+* Status: the pack builder was run and its output checked. Import through the folder picker and playback of imported pets were **not** verified on a device (the emulator was too slow).
 
 ## New in 2.4.0
 * 9 more pets (26-34). Watermarks: "@noxelleanimation" (pet 26) and a signature (pet 27) were removed by cropping the bottom 7%. The creator-name banners ("yummyasa", "hasuyuki") inside the background art of pet 28 are left as they are part of the picture. 32 pets total.
