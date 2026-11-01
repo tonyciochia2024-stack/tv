@@ -5,10 +5,10 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 
 | | |
 |---|---|
-| Package | `com.pets.desktoppets` · name **Pets** · v1.2.0 |
+| Package | `com.pets.desktoppets` · name **Pets** · v2.0.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
-| APKs | `dist/Pets-1.2.0-release.apk` (132 MB, not committed: build it or get it from the chat) |
+| APKs | `dist/Pets-2.0.0-release.apk` (164 MB, not committed: build it or get it from the chat) |
 
 ## Install
 ```
@@ -27,6 +27,16 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * UI state reflects the real service/overlay (`PetState`), never a saved flag alone: *Active / Starting / Hidden / Pet stopped*.
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
+
+## New in 2.0.0 (video pets)
+Background removal was given up. The pets are now **the supplied videos exactly as recorded**, played in a rounded floating window:
+* **15 pets** = 15 videos (14 earlier ones + `Screen_Recording_20261101_001726_TikTok.mp4`). Nothing missing. Pet 14 is the 502x372 CapCut clip, 2x Lanczos-upscaled.
+* **Seamless loop**: `tools/build_videos.py` cross-fades the last 0.6 s into the first 0.6 s (picture *and* song), so the end flows into the start. Constant 30 fps, H.264 CRF 19 at the source's full 1080 px width, AAC song loudness-normalised.
+* **Song setting**: Settings > Song (on/off + volume) and a quick chip on Home. Only the floating pet plays sound; in-app previews are silent.
+* Player: AndroidX Media3 ExoPlayer (`REPEAT_MODE_ONE`), pauses while the screen is off.
+* New look: gradient backdrop, glass cards, brand-gradient title and buttons, floating pill navigation, live status pill on the preview.
+* Max pet size raised to 400 dp. APK ~164 MB (the videos).
+* The old transparent-cutout pipeline (`process_videos.py`, `pets_matte.py`) is kept in `tools/` but is no longer used.
 
 ## New in 1.2.0
 * Re-matted at full 1080 px source resolution with a new outline-bounded matte (no more soft glow halo around characters), foreground colours re-estimated, floating specks removed.

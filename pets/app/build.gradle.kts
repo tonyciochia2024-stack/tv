@@ -12,8 +12,8 @@ android {
         applicationId = "com.pets.desktoppets"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = 4
+        versionName = "2.0.0"
     }
 
     signingConfigs {
@@ -43,7 +43,7 @@ android {
     buildFeatures { compose = true; buildConfig = true }
 
     // Animation packs are random-accessed through AssetFileDescriptor -> must stay uncompressed.
-    androidResources { noCompress += listOf("bin") }
+    androidResources { noCompress += listOf("mp4", "jpg", "bin") }
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
 }
 
@@ -60,6 +60,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-service:2.8.7")
     implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.media3:media3-exoplayer:1.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     testImplementation("junit:junit:4.13.2")
 }

@@ -13,7 +13,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -57,7 +65,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Tab(val label: String) { Home("Home"), Characters("Characters"), Settings("Settings") }
+private enum class Tab(val label: String) { Home("Home"), Characters("Pets"), Settings("Settings") }
 
 @Composable
 private fun PetsApp(vm: PetsViewModel) {
@@ -80,25 +88,31 @@ private fun PetsApp(vm: PetsViewModel) {
         ctx.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${ctx.packageName}")))
     }
 
-    Scaffold(
-        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
-        bottomBar = {
-            NavigationBar(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant) {
-                Tab.entries.forEach { t ->
-                    NavigationBarItem(
-                        selected = tab == t, onClick = { tab = t }, label = { Text(t.label) },
-                        icon = { Icon(when (t) { Tab.Home -> Icons.Default.Home; Tab.Characters -> Icons.Default.Favorite; Tab.Settings -> Icons.Default.Settings }, null) },
-                    )
-                }
+    Box(Modifier.fillMaxSize().background(appBackground())) {
+        Crossfade(tab, label = "tab") { t ->
+            when (t) {
+                Tab.Home -> HomeScreen(ui, vm, onShow, { vm.hidePet() }, { tab = Tab.Characters }, openOverlaySettings)
+                Tab.Characters -> CharactersScreen(ui, vm) { tab = Tab.Home }
+                Tab.Settings -> SettingsScreen(ui, vm, openOverlaySettings)
             }
-        },
-    ) { pad ->
-        Box(Modifier.padding(pad).fillMaxSize()) {
-            Crossfade(tab, label = "tab") { t ->
-                when (t) {
-                    Tab.Home -> HomeScreen(ui, vm, onShow, { vm.hidePet() }, { tab = Tab.Characters }, openOverlaySettings)
-                    Tab.Characters -> CharactersScreen(ui, vm) { tab = Tab.Home }
-                    Tab.Settings -> SettingsScreen(ui, vm, openOverlaySettings)
+        }
+        // floating pill navigation
+        Surface(
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 24.dp, vertical = 12.dp),
+            shape = RoundedCornerShape(32.dp), shadowElevation = 14.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
+        ) {
+            Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Tab.entries.forEach { t ->
+                    val sel = tab == t
+                    Row(
+                        Modifier.clip(RoundedCornerShape(26.dp)).background(if (sel) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                            .clickable(onClickLabel = t.label) { tab = t }.heightIn(min = 48.dp).padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Icon(when (t) { Tab.Home -> Icons.Default.Home; Tab.Characters -> Icons.Default.Favorite; Tab.Settings -> Icons.Default.Settings }, null,
+                            tint = if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (sel) Text(t.label, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    }
                 }
             }
         }

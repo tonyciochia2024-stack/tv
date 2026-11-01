@@ -60,7 +60,7 @@ class PetOverlayService : LifecycleService() {
     private lateinit var repo: CharacterRepository
     private var view: PetView? = null
     private var params: WindowManager.LayoutParams? = null
-    private var player: FramePlayer? = null
+    private var player: PetPlayer? = null
     private var settingsJob: Job? = null
     private var touchJob: Job? = null
     private val appOps by lazy { getSystemService(AppOpsManager::class.java) }
@@ -85,8 +85,8 @@ class PetOverlayService : LifecycleService() {
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
             when (i.action) {
-                Intent.ACTION_SCREEN_OFF -> player?.stop()          // no rendering while the screen is off
-                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> { player?.start(); relayout() }
+                Intent.ACTION_SCREEN_OFF -> player?.pause()         // no decoding / song while the screen is off
+                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> { player?.play(); relayout() }
             }
         }
     }
@@ -151,7 +151,7 @@ class PetOverlayService : LifecycleService() {
             PixelFormat.TRANSLUCENT,
         ).apply { gravity = Gravity.TOP or Gravity.START; title = "PetOverlay" }
         v.dragListener = dragListener
-        val p = FramePlayer(this) { bmp -> v.show(bmp) }
+        val p = PetPlayer(this).also { it.setVideoView(v.texture) }
         view = v; params = lp; player = p
 
         // Follow the preferences: character / size changes are applied live, no restart needed.
@@ -172,6 +172,7 @@ class PetOverlayService : LifecycleService() {
         if (info == null) { PetState.setError("no_characters"); stopSelf(); return }
         val characterChanged = info.id != current?.id
         if (characterChanged) { current = info; player?.setCharacter(info) }
+        player?.setVolume(if (s.soundOn) s.volume / 100f else 0f)
         v.alpha = s.opacity / 100f
         if (characterChanged || s.sizeDp != sizeDp) {
             sizeDp = s.sizeDp
@@ -187,7 +188,7 @@ class PetOverlayService : LifecycleService() {
                 wm.addView(v, lp)
                 added = true
                 PetState.setOverlayAttached(true)
-                player?.start()
+                player?.play()
             } catch (e: Exception) {   // e.g. permission revoked between check and add
                 PetState.setError("overlay_failed")
                 stopSelf()

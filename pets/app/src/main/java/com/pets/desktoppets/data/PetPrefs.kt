@@ -12,7 +12,7 @@ private val Context.store: DataStore<Preferences> by preferencesDataStore(name =
 
 const val DEFAULT_SIZE_DP = 160
 const val MIN_SIZE_DP = 80
-const val MAX_SIZE_DP = 320
+const val MAX_SIZE_DP = 400
 const val MIN_OPACITY = 30
 const val DEFAULT_FX = 0.92f
 const val DEFAULT_FY = 0.68f
@@ -32,6 +32,9 @@ data class PetSettings(
     val shuffle: Boolean = false,
     val favorites: Set<String> = emptySet(),
     val onboardingDone: Boolean = false,
+    /** The song inside each pet video. */
+    val soundOn: Boolean = true,
+    val volume: Int = 60,
 )
 
 class PetPrefs(context: Context) {
@@ -48,6 +51,8 @@ class PetPrefs(context: Context) {
         val shuffle = booleanPreferencesKey("shuffle")
         val favorites = stringSetPreferencesKey("favorites")
         val onboarding = booleanPreferencesKey("onboarding_done")
+        val sound = booleanPreferencesKey("sound_on")
+        val volume = intPreferencesKey("volume")
     }
 
     val flow: Flow<PetSettings> = store.data.map { p ->
@@ -62,6 +67,8 @@ class PetPrefs(context: Context) {
             shuffle = p[K.shuffle] ?: false,
             favorites = p[K.favorites] ?: emptySet(),
             onboardingDone = p[K.onboarding] ?: false,
+            soundOn = p[K.sound] ?: true,
+            volume = (p[K.volume] ?: 60).coerceIn(0, 100),
         )
     }
 
@@ -73,6 +80,8 @@ class PetPrefs(context: Context) {
     suspend fun setRestoreOnBoot(v: Boolean) = store.edit { it[K.restore] = v }
     suspend fun setWantActive(v: Boolean) = store.edit { it[K.want] = v }
     suspend fun setOpacity(percent: Int) = store.edit { it[K.opacity] = percent.coerceIn(MIN_OPACITY, 100) }
+    suspend fun setSound(v: Boolean) = store.edit { it[K.sound] = v }
+    suspend fun setVolume(v: Int) = store.edit { it[K.volume] = v.coerceIn(0, 100) }
     suspend fun setShuffle(v: Boolean) = store.edit { it[K.shuffle] = v }
     suspend fun setOnboardingDone() = store.edit { it[K.onboarding] = true }
     suspend fun toggleFavorite(id: String) = store.edit {

@@ -27,13 +27,14 @@ import kotlin.math.roundToInt
 fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> Unit) {
     val ctx = LocalContext.current
     var size by remember(ui.settings.sizeDp) { mutableFloatStateOf(ui.settings.sizeDp.toFloat()) }
+    var volume by remember(ui.settings.volume) { mutableFloatStateOf(ui.settings.volume.toFloat()) }
     var opacity by remember(ui.settings.opacity) { mutableFloatStateOf(ui.settings.opacity.toFloat()) }
 
     Column(
         Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = accent())
+        Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, style = brandTitle(30))
 
         Section("Pet size") {
             Text("${size.roundToInt()} dp tall (default $DEFAULT_SIZE_DP dp)", fontWeight = FontWeight.SemiBold)
@@ -48,6 +49,21 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
             Text("Drag the pet to move it (while Pets is open the pet lets touches through, so it never covers these controls). Tapping it does nothing.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
+        Section("Song") {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Play the song", fontWeight = FontWeight.SemiBold)
+                    Text("Each pet video carries its song. Turn it off for a silent pet; the video keeps playing.", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(ui.settings.soundOn, { vm.setSound(it) })
+            }
+            if (ui.settings.soundOn) {
+                Text("Volume ${volume.roundToInt()} %", fontWeight = FontWeight.SemiBold)
+                Slider(value = volume, onValueChange = { volume = it; vm.setVolume(it.roundToInt()) }, valueRange = 0f..100f)
+            }
+        }
+
         Section("Look") {
             Text("Opacity ${opacity.roundToInt()} %", fontWeight = FontWeight.SemiBold)
             Slider(
@@ -57,7 +73,7 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("Surprise me", fontWeight = FontWeight.SemiBold)
-                    Text("Pick a different random character every time you tap Show Pet.", style = MaterialTheme.typography.bodySmall,
+                    Text("Pick a different random pet every time you tap Show Pet.", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Switch(ui.settings.shuffle, { vm.setShuffle(it) })
@@ -112,15 +128,15 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
 
         Section("About") {
             Text("Pets ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})", fontWeight = FontWeight.SemiBold)
-            Text("${ui.characters.size} characters, all bundled offline. No ads, no analytics, no internet access.", style = MaterialTheme.typography.bodySmall)
+            Text("${ui.characters.size} pets, all bundled offline. No ads, no analytics, no internet access.", style = MaterialTheme.typography.bodySmall)
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(88.dp))
     }
 }
 
 @Composable
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Card(shape = MaterialTheme.shapes.medium, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+    GlassCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(title, fontWeight = FontWeight.Bold, fontSize = 17.sp, color = MaterialTheme.colorScheme.secondary)
             content()

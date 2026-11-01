@@ -88,6 +88,10 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
     fun select(c: CharacterInfo) = viewModelScope.launch { prefs.setSelected(c.id) }   // overlay follows live
     fun setSize(dp: Int) { sizeInput.tryEmit(dp) }
     fun setOpacity(percent: Int) { opacityInput.tryEmit(percent) }
+    fun setSound(v: Boolean) = viewModelScope.launch { prefs.setSound(v) }
+    private val volumeInput = MutableSharedFlow<Int>(extraBufferCapacity = 64)
+    init { viewModelScope.launch { volumeInput.debounce(120).collect { prefs.setVolume(it) } } }
+    fun setVolume(v: Int) { volumeInput.tryEmit(v) }
     fun setShuffle(v: Boolean) = viewModelScope.launch { prefs.setShuffle(v) }
     fun toggleFavorite(c: CharacterInfo) = viewModelScope.launch { prefs.toggleFavorite(c.id) }
     fun finishOnboarding() = viewModelScope.launch { prefs.setOnboardingDone() }
