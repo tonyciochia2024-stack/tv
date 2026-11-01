@@ -54,7 +54,15 @@ for i, f in enumerate(files, 1):
     ow, oh = ow // 2 * 2, oh // 2 * 2
     T = T - 0.05
     dst = out / pid; dst.mkdir(exist_ok=True)
-    base = f"[0:v]{crop}fps=30,{sc}scale={ow}:{oh},format=yuv420p,setsar=1,split=3[v1][v2][v3];"
+    lg = o.get("logo")
+    pre, srcv = "", "[0:v]"
+    if lg:   # cover an animated watermark: soft-blurred copy of the art just above it, feathered in during [t0, t1]
+        X, Y, Wd, Hd = lg["x"], lg["y"], lg["w"], lg["h"]
+        pre = (f"[0:v]split=2[la][lb];[lb]crop=iw*{Wd}:ih*{Hd}:iw*{X}:ih*({Y}-{Hd}-0.03),gblur=sigma=9[lf];"
+               f"[1:v]format=gray[mg];[mg][lf]scale2ref[lm][lf2];[lf2][lm]alphamerge[lfa];"
+               f"[la][lfa]overlay=x=main_w*{X}:y=main_h*{Y}:enable='between(t,{lg['t0']},{lg['t1']})'[src];")
+        srcv = "[src]"
+    base = f"{pre}{srcv}{crop}fps=30,{sc}scale={ow}:{oh},format=yuv420p,setsar=1,split=3[v1][v2][v3];"
     vf = (f"{base}[v1]trim=start={d}:end={T-d},setpts=PTS-STARTPTS[vm];"
           f"[v2]trim=start={T-d}:end={T},setpts=PTS-STARTPTS[vt];"
           f"[v3]trim=start=0:end={d},setpts=PTS-STARTPTS[vh];"
@@ -65,7 +73,7 @@ for i, f in enumerate(files, 1):
           f"[a3]atrim=start=0:end={d},asetpts=PTS-STARTPTS[ah];"
           f"[at]afade=t=out:st=0:d={d}:curve=qsin[atf];[ah]afade=t=in:st=0:d={d}:curve=qsin[ahf];"
           f"[atf][ahf]amix=inputs=2:duration=longest:normalize=0[ax];[am][ax]concat=n=2:v=0:a=1,loudnorm=I=-18:TP=-1.5:LRA=11[aout]") if has_a else ""
-    cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(f), "-filter_complex", vf + af, "-map", "[vout]"]
+    cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(f)] + (["-loop", "1", "-framerate", "30", "-i", str(Path(__file__).resolve().parent / "logo_mask.png")] if lg else []) + ["-filter_complex", vf + af, "-map", "[vout]"]
     if has_a: cmd += ["-map", "[aout]", "-c:a", "aac", "-b:a", "160k", "-ar", "48000"]
     cmd += ["-c:v", "libx264", "-preset", a.preset, "-crf", str(a.crf), "-profile:v", "high", "-pix_fmt", "yuv420p",
             "-shortest", "-movflags", "+faststart", "-r", "30", str(dst / "loop.mp4")]
