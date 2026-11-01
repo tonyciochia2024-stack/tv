@@ -13,6 +13,7 @@ import com.pets.desktoppets.data.CharacterInfo
  * Looping video (+ song) player for one pet. The clips are pre-built as seamless loops (cross-faded
  * end -> start), so plain REPEAT_MODE_ONE is enough. Must be created and used on the main thread.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PetPlayer(context: Context, private val handleAudioFocus: Boolean = true) {
     private val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext)
         .setLoadControl(androidx.media3.exoplayer.DefaultLoadControl.Builder().setBufferDurationsMs(1500, 5000, 150, 300).build())
