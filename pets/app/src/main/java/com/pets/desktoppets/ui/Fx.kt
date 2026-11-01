@@ -119,13 +119,18 @@ fun Modifier.neonBorder(corner: Dp, width: Dp = 3.dp, active: Boolean = true, sp
     }
 }
 
-/** Slide-up + fade + pop, staggered by [index]. */
+private val seenEntrances = HashSet<Any>()
+
+/** Slide-up + fade + pop, staggered by [index]. Plays once per [key]: scrolling or switching tabs never replays it. */
 fun Modifier.entrance(index: Int = 0, key: Any? = Unit): Modifier = composed {
-    val a = remember(key) { Animatable(0f) }
-    LaunchedEffect(key) { delay((index.coerceAtMost(10) * 65).toLong()); a.animateTo(1f, spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow)) }
+    val firstTime = remember(key) { seenEntrances.add(key ?: Unit) }
+    val a = remember(key) { Animatable(if (firstTime) 0f else 1f) }
+    LaunchedEffect(key) {
+        if (firstTime) { delay((index.coerceAtMost(6) * 35).toLong()); a.animateTo(1f, spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMedium)) }
+    }
     graphicsLayer {
-        alpha = a.value.coerceIn(0f, 1f); translationY = (1f - a.value) * 90f
-        val s = 0.9f + 0.1f * a.value; scaleX = s; scaleY = s
+        alpha = a.value.coerceIn(0f, 1f); translationY = (1f - a.value) * 60f
+        val s = 0.94f + 0.06f * a.value; scaleX = s; scaleY = s
     }
 }
 

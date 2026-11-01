@@ -40,7 +40,7 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
         Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Settings", style = shimmerTitle(36), modifier = Modifier.entrance(0))
+        Text("Settings", style = shimmerTitle(36), modifier = Modifier.entrance(0, "settingsTitle"))
 
         Section("Menu colors") {
             Text("Pick a look for the whole app. It changes live.", style = MaterialTheme.typography.bodySmall, color = LocalPalette.current.muted)

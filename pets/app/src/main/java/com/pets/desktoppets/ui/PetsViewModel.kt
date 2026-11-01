@@ -65,6 +65,7 @@ class PetsViewModel(app: Application) : AndroidViewModel(app) {
     private val opacityInput = MutableSharedFlow<Int>(extraBufferCapacity = 64)
 
     init {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) { repo.characters.forEach { repo.poster(it) } }   // warm the poster cache
         viewModelScope.launch { sizeInput.debounce(150).collect { prefs.setSize(it) } }
         viewModelScope.launch { opacityInput.debounce(150).collect { prefs.setOpacity(it) } }
     }

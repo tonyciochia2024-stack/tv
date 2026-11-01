@@ -171,7 +171,7 @@ class PetOverlayService : LifecycleService() {
         val info = repo.resolve(s.selectedId)
         if (info == null) { PetState.setError("no_characters"); stopSelf(); return }
         val characterChanged = info.id != current?.id
-        if (characterChanged) { current = info; player?.setCharacter(info) }
+        if (characterChanged) { current = info; v.setPoster(repo.poster(info)); player?.setCharacter(info) }
         player?.setVolume(if (s.soundOn) s.volume / 100f else 0f)
         v.alpha = s.opacity / 100f
         if (characterChanged || s.sizeDp != sizeDp) {

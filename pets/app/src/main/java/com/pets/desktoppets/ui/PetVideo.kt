@@ -50,3 +50,12 @@ fun PetVideo(info: CharacterInfo, playing: Boolean, poster: Bitmap?, modifier: M
         }
     }
 }
+
+/** Poster for [info]: instant when cached, otherwise decoded on a background thread (placeholder until then). */
+@Composable
+fun rememberPoster(repo: com.pets.desktoppets.data.CharacterRepository, info: CharacterInfo): Bitmap? {
+    val state = produceState(initialValue = repo.cachedPoster(info.id), info.id) {
+        if (value == null) value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { repo.poster(info) }
+    }
+    return state.value
+}

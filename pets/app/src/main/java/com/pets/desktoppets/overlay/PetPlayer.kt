@@ -14,7 +14,9 @@ import com.pets.desktoppets.data.CharacterInfo
  * end -> start), so plain REPEAT_MODE_ONE is enough. Must be created and used on the main thread.
  */
 class PetPlayer(context: Context, private val handleAudioFocus: Boolean = true) {
-    private val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext).build().apply {
+    private val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext)
+        .setLoadControl(androidx.media3.exoplayer.DefaultLoadControl.Builder().setBufferDurationsMs(1500, 5000, 150, 300).build())
+        .build().apply {
         repeatMode = Player.REPEAT_MODE_ONE
         setAudioAttributes(
             AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),

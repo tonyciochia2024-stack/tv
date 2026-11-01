@@ -41,7 +41,7 @@ fun HomeScreen(
         Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        Row(Modifier.entrance(0), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+        Row(Modifier.entrance(0, "home0"), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             val pulse by rememberInfiniteTransition(label = "logo").animateFloat(1f, 1.07f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "s")
             Image(painterResource(R.drawable.brand_chibi), null,
                 Modifier.size(58.dp).graphicsLayer { scaleX = pulse; scaleY = pulse }.neonBorder(29.dp, 3.dp, speedMs = 2600).padding(3.dp).clip(CircleShape).background(Color.White))
@@ -53,7 +53,7 @@ fun HomeScreen(
 
         // Hero: the real looping video of the selected pet, in a spinning neon frame
         Box(
-            Modifier.entrance(1).fillMaxWidth().drawBehind {
+            Modifier.entrance(1, "home1").fillMaxWidth().drawBehind {
                 drawRect(Brush.radialGradient(listOf(p.primary.copy(alpha = 0.32f), Color.Transparent), Offset(size.width / 2, size.height / 2), size.width * 0.75f))
             }.floaty(4f, 3800),
         ) {
@@ -62,7 +62,7 @@ fun HomeScreen(
                 if (c == null) Text("No pets found in this build.", Modifier.padding(32.dp))
                 else Column(Modifier.padding(10.dp)) {
                     Box {
-                        PetVideo(c, playing = true, poster = vm.repo.poster(c), modifier = Modifier.fillMaxWidth(), corner = 20.dp)
+                        PetVideo(c, playing = true, poster = rememberPoster(vm.repo, c), modifier = Modifier.fillMaxWidth(), corner = 20.dp)
                         StatusPill(ui.status, Modifier.align(Alignment.TopStart).padding(10.dp))
                     }
                     Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -81,7 +81,7 @@ fun HomeScreen(
         }
 
         if (!ui.settings.onboardingDone) {
-            GlassCard(Modifier.fillMaxWidth().entrance(2)) {
+            GlassCard(Modifier.fillMaxWidth().entrance(2, "home2")) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("Welcome to Pets ✨", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     Text("1. Pick a pet in the Pets tab.\n2. Allow \"Display over other apps\" once.\n3. Tap Show Pet and go to your home screen.\n4. Drag it wherever you like. It only plays - tapping it does nothing.",
@@ -92,7 +92,7 @@ fun HomeScreen(
         }
 
         if (!ui.canDrawOverlays) {
-            GlassCard(Modifier.fillMaxWidth().entrance(2)) {
+            GlassCard(Modifier.fillMaxWidth().entrance(2, "home2")) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Overlay permission needed", fontWeight = FontWeight.Bold, fontSize = 19.sp)
                     Text("Android requires \"Display over other apps\" so your pet can float above the home screen and other apps. Pets uses it for nothing else.",
@@ -115,11 +115,11 @@ fun HomeScreen(
             }, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
 
-        Row(Modifier.entrance(3), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.entrance(3, "home3"), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ShineButton("Show Pet", { haptic.performHapticFeedback(HapticFeedbackType.LongPress); onShow() }, enabled = canShow, modifier = Modifier.weight(1f))
             OutlineGlowButton("Hide Pet", { haptic.performHapticFeedback(HapticFeedbackType.LongPress); onHide() }, enabled = ui.status != PetStatus.Hidden, modifier = Modifier.weight(1f))
         }
-        Box(Modifier.entrance(4).fillMaxWidth()) { OutlineGlowButton("Choose pet", onChoose, enabled = true, modifier = Modifier.fillMaxWidth()) }
+        Box(Modifier.entrance(4, "home4").fillMaxWidth()) { OutlineGlowButton("Choose pet", onChoose, enabled = true, modifier = Modifier.fillMaxWidth()) }
         Spacer(Modifier.height(96.dp))
     }
 }

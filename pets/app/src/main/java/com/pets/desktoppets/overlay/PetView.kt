@@ -22,7 +22,10 @@ class PetView(context: Context) : FrameLayout(context) {
         fun onDragEnd()
     }
 
-    val texture = TextureView(context).apply { isOpaque = true }
+    private val posterView = android.widget.ImageView(context).apply { scaleType = android.widget.ImageView.ScaleType.CENTER_CROP }
+    val texture = TextureView(context).apply { isOpaque = false }   // poster shows through until the first video frame
+
+    fun setPoster(b: android.graphics.Bitmap?) = posterView.setImageBitmap(b)
     var dragListener: DragListener? = null
     private val slop = ViewConfiguration.get(context).scaledTouchSlop
     private var downX = 0f
@@ -30,6 +33,7 @@ class PetView(context: Context) : FrameLayout(context) {
     private var dragging = false
 
     init {
+        addView(posterView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         addView(texture, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO   // purely decorative
         isClickable = false

@@ -39,13 +39,13 @@ fun CharactersScreen(ui: UiState, vm: PetsViewModel, onSelectedGoHome: () -> Uni
     var onlyFavorites by rememberSaveable { mutableStateOf(false) }
     val shown = if (onlyFavorites) ui.characters.filter { it.id in ui.settings.favorites } else ui.characters
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
-        Text("Pets", style = shimmerTitle(36), modifier = Modifier.padding(start = 20.dp, top = 12.dp).entrance(0))
-        Text("Tap a card to play it, then pick your pet.", Modifier.padding(horizontal = 20.dp, vertical = 4.dp).entrance(1),
+        Text("Pets", style = shimmerTitle(36), modifier = Modifier.padding(start = 20.dp, top = 12.dp).entrance(0, "chars0"))
+        Text("Tap a card to play it, then pick your pet.", Modifier.padding(horizontal = 20.dp, vertical = 4.dp).entrance(1, "chars1"),
             style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic), color = p.muted)
         if (ui.characters.isEmpty()) {
             Text("No pets available.", Modifier.padding(20.dp)); return@Column
         }
-        Row(Modifier.padding(horizontal = 16.dp).entrance(2), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.padding(horizontal = 16.dp).entrance(2, "chars2"), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!onlyFavorites, { onlyFavorites = false }, label = { Text("All ${ui.characters.size}") })
             FilterChip(onlyFavorites, { onlyFavorites = true }, label = { Text("♥ Favourites ${ui.settings.favorites.size}") })
         }
@@ -69,7 +69,7 @@ private fun PetCard(c: CharacterInfo, vm: PetsViewModel, index: Int, favorite: B
     val p = LocalPalette.current
     val confetti = LocalConfetti.current
     val haptic = LocalHapticFeedback.current
-    val poster = remember(c.id) { vm.repo.poster(c) }
+    val poster = rememberPoster(vm.repo, c)
     val heart by animateFloatAsState(if (favorite) 1.25f else 1f, spring(dampingRatio = 0.25f, stiffness = Spring.StiffnessMedium), label = "heart")
     GlassCard(Modifier.entrance(index, c.id).neonBorder(26.dp, 3.dp, active = selected, speedMs = 2800).bouncy { onToggle() }) {
         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

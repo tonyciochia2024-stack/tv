@@ -30,12 +30,16 @@ class CharacterRepository(private val context: Context) {
     fun byId(id: String?): CharacterInfo? = characters.firstOrNull { it.id == id }
     fun resolve(id: String?): CharacterInfo? = byId(id) ?: characters.firstOrNull()
 
-    private val posters = object : LruCache<String, Bitmap>(16) {}
+    private val posters = object : LruCache<String, Bitmap>(48) {}
+
+    /** Already-decoded poster or null (never blocks). */
+    fun cachedPoster(id: String): Bitmap? = posters.get(id)
 
     fun poster(info: CharacterInfo): Bitmap? {
         posters.get(info.id)?.let { return it }
         return try {
-            context.assets.open(info.posterPath).use { BitmapFactory.decodeStream(it) }?.also { posters.put(info.id, it) }
+            val o = BitmapFactory.Options().apply { inSampleSize = 2 }   // 360 px wide is plenty for cards
+            context.assets.open(info.posterPath).use { BitmapFactory.decodeStream(it, null, o) }?.also { posters.put(info.id, it) }
         } catch (e: Exception) {
             null   // missing / damaged poster: UI shows a placeholder
         }
