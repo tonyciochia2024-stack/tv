@@ -1,23 +1,143 @@
 {
  "_note": "Names identified by eye (web search cannot match faces). sure=true: confident. Others are best guesses or descriptive labels. Edit freely, then run tools/apply_names.py.",
- "pet01": {"name": "Alya & Raven Devil",             "characters": ["Alya (Roshidere)", "unknown black-haired girl"], "sure": false},
- "pet02": {"name": "Roxy & Eris",                    "characters": ["Roxy Migurdia (Mushoku Tensei)", "Eris Greyrat (Mushoku Tensei)"], "sure": false},
- "pet03": {"name": "Crimson Devil & Angel",          "characters": ["unknown red-haired girl, devil form", "same girl, angel form"], "sure": false},
- "pet04": {"name": "Miku Nakano",                    "characters": ["Miku Nakano (The Quintessential Quintuplets)"], "sure": false},
- "pet05": {"name": "Rabbit Hat Devil & Sparkle",     "characters": ["unknown white-haired girl with rabbit top hat", "Sparkle (Honkai: Star Rail)"], "sure": false},
- "pet06": {"name": "Nino Nakano",                    "characters": ["Nino Nakano (The Quintessential Quintuplets)"], "sure": false},
- "pet07": {"name": "Itsuki Nakano",                  "characters": ["Itsuki Nakano (The Quintessential Quintuplets)"], "sure": true},
- "pet08": {"name": "Honey Wave & Peach Twintails",   "characters": ["unknown brown wavy-haired girl", "unknown peach twintail girl"], "sure": false},
- "pet09": {"name": "Marin Kitagawa & Midnight Devil","characters": ["Marin Kitagawa (My Dress-Up Darling)", "unknown black-haired girl"], "sure": false},
- "pet10": {"name": "Roxy & Ash Elf",                 "characters": ["Roxy Migurdia (Mushoku Tensei)", "unknown short ash-blond elf"], "sure": false},
- "pet11": {"name": "Rei Ayanami & Asuka Langley",    "characters": ["Rei Ayanami (Evangelion)", "Asuka Langley Soryu (Evangelion)"], "sure": true},
- "pet12": {"name": "Navy Devil & Marin Kitagawa",    "characters": ["unknown navy-haired girl", "Marin Kitagawa (My Dress-Up Darling)"], "sure": false},
- "pet13": {"name": "Violet Raven & Frost Devil",     "characters": ["unknown dark-haired girl", "unknown silver-haired girl"], "sure": false},
- "pet14": {"name": "Nino & Miku Nakano",             "characters": ["Nino Nakano (The Quintessential Quintuplets)", "Miku Nakano (The Quintessential Quintuplets)"], "sure": true},
- "pet15": {"name": "Eyepatch Sailor Twins",          "characters": ["unknown eyepatch sailor girl (long hair)", "same girl (short hair)"], "sure": false},
- "pet16": {"name": "Starry Elf & Violet Devil",      "characters": ["unknown silver-haired elf (original art)", "unknown purple-haired girl (original art)"], "sure": false},
- "pet17": {"name": "Lavender Braid & Glasses Devil", "characters": ["unknown lavender braid girl (original art)", "unknown glasses redhead (original art)"], "sure": false},
- "pet18": {"name": "Ember Braid & Plum Devil",       "characters": ["unknown orange-red braid girl (original art)", "unknown plum-haired green-eyed girl (original art)"], "sure": false},
- "pet19": {"name": "Kasane Teto & Hatsune Miku",     "characters": ["Kasane Teto (UTAU)", "Hatsune Miku (Vocaloid)"], "sure": true},
- "pet20": {"name": "Pale Pink Devil",                "characters": ["unknown pink-silver girl, possibly Alya"], "sure": false}
+ "pet01": {
+  "name": "Alya & Yuki",
+  "characters": [
+   "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)",
+   "Yuki Suou (Alya Sometimes Hides Her Feelings in Russian)"
+  ],
+  "sure": true
+ },
+ "pet02": {
+  "name": "Roxy & Eris",
+  "characters": [
+   "Roxy Migurdia (Mushoku Tensei)",
+   "Eris Greyrat (Mushoku Tensei)"
+  ],
+  "sure": false
+ },
+ "pet03": {
+  "name": "Hu Tao",
+  "characters": [
+   "Hu Tao (Genshin Impact), devil version",
+   "Hu Tao (Genshin Impact), angel version"
+  ],
+  "sure": true
+ },
+ "pet04": {
+  "name": "Miku Nakano",
+  "characters": [
+   "Miku Nakano (The Quintessential Quintuplets)"
+  ],
+  "sure": false
+ },
+ "pet05": {
+  "name": "Sparxie & Sparkle",
+  "characters": [
+   "Sparxie (Honkai: Star Rail)",
+   "Sparkle (Honkai: Star Rail)"
+  ],
+  "sure": true
+ },
+ "pet06": {
+  "name": "Nino Nakano",
+  "characters": [
+   "Nino Nakano (The Quintessential Quintuplets)"
+  ],
+  "sure": false
+ },
+ "pet07": {
+  "name": "Itsuki Nakano",
+  "characters": [
+   "Itsuki Nakano (The Quintessential Quintuplets)"
+  ],
+  "sure": true
+ },
+ "pet10": {
+  "name": "Roxy & Sylphiette",
+  "characters": [
+   "Roxy Migurdia (Mushoku Tensei)",
+   "Sylphiette (Mushoku Tensei)"
+  ],
+  "sure": true
+ },
+ "pet11": {
+  "name": "Rei Ayanami & Asuka Langley",
+  "characters": [
+   "Rei Ayanami (Evangelion)",
+   "Asuka Langley Soryu (Evangelion)"
+  ],
+  "sure": true
+ },
+ "pet12": {
+  "name": "Kaoruko Waguri & Marin Kitagawa",
+  "characters": [
+   "Kaoruko Waguri (The Fragrant Flower Blooms with Dignity)",
+   "Marin Kitagawa (My Dress-Up Darling)"
+  ],
+  "sure": true
+ },
+ "pet13": {
+  "name": "Yuki & Alya",
+  "characters": [
+   "Yuki Suou (Alya Sometimes Hides Her Feelings in Russian)",
+   "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
+  ],
+  "sure": true
+ },
+ "pet14": {
+  "name": "Nino & Miku Nakano",
+  "characters": [
+   "Nino Nakano (The Quintessential Quintuplets)",
+   "Miku Nakano (The Quintessential Quintuplets)"
+  ],
+  "sure": true
+ },
+ "pet15": {
+  "name": "Phoenix",
+  "characters": [
+   "Phoenix (Zenless Zone Zero), long hair",
+   "Phoenix (Zenless Zone Zero), short hair"
+  ],
+  "sure": true
+ },
+ "pet16": {
+  "name": "Frieren & Fern",
+  "characters": [
+   "Frieren (Frieren: Beyond Journey's End)",
+   "Fern (Frieren: Beyond Journey's End)"
+  ],
+  "sure": true
+ },
+ "pet17": {
+  "name": "Nazuna & Anko",
+  "characters": [
+   "Nazuna Nanakusa (Call of the Night)",
+   "Anko Uguisu (Call of the Night)"
+  ],
+  "sure": true
+ },
+ "pet18": {
+  "name": "Makima & Reze",
+  "characters": [
+   "Makima (Chainsaw Man)",
+   "Reze (Chainsaw Man)"
+  ],
+  "sure": true
+ },
+ "pet19": {
+  "name": "Kasane Teto & Hatsune Miku",
+  "characters": [
+   "Kasane Teto (UTAU)",
+   "Hatsune Miku (Vocaloid)"
+  ],
+  "sure": true
+ },
+ "pet20": {
+  "name": "Alya",
+  "characters": [
+   "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
+  ],
+  "sure": true
+ }
 }

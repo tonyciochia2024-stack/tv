@@ -5,7 +5,7 @@
  "pets": [
   {
    "id": "pet01",
-   "name": "Alya & Raven Devil",
+   "name": "Alya & Yuki",
    "video": "pets/pet01/loop.mp4",
    "poster": "pets/pet01/poster.jpg",
    "width": 1080,
@@ -15,8 +15,8 @@
    "source": "20261029_220753.mp4",
    "bytes": 11680412,
    "characters": [
-    "Alya (Roshidere)",
-    "unknown black-haired girl"
+    "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)",
+    "Yuki Suou (Alya Sometimes Hides Her Feelings in Russian)"
    ]
   },
   {
@@ -37,7 +37,7 @@
   },
   {
    "id": "pet03",
-   "name": "Crimson Devil & Angel",
+   "name": "Hu Tao",
    "video": "pets/pet03/loop.mp4",
    "poster": "pets/pet03/poster.jpg",
    "width": 1080,
@@ -47,8 +47,8 @@
    "source": "20261029_220904.mp4",
    "bytes": 7951185,
    "characters": [
-    "unknown red-haired girl, devil form",
-    "same girl, angel form"
+    "Hu Tao (Genshin Impact), devil version",
+    "Hu Tao (Genshin Impact), angel version"
    ]
   },
   {
@@ -68,7 +68,7 @@
   },
   {
    "id": "pet05",
-   "name": "Rabbit Hat Devil & Sparkle",
+   "name": "Sparxie & Sparkle",
    "video": "pets/pet05/loop.mp4",
    "poster": "pets/pet05/poster.jpg",
    "width": 1080,
@@ -78,7 +78,7 @@
    "source": "20261029_221031.mp4",
    "bytes": 14461376,
    "characters": [
-    "unknown white-haired girl with rabbit top hat",
+    "Sparxie (Honkai: Star Rail)",
     "Sparkle (Honkai: Star Rail)"
    ]
   },
@@ -113,40 +113,8 @@
    ]
   },
   {
-   "id": "pet08",
-   "name": "Honey Wave & Peach Twintails",
-   "video": "pets/pet08/loop.mp4",
-   "poster": "pets/pet08/poster.jpg",
-   "width": 1080,
-   "height": 802,
-   "durationMs": 18184,
-   "hasAudio": true,
-   "source": "20261029_221247.mp4",
-   "bytes": 12072752,
-   "characters": [
-    "unknown brown wavy-haired girl",
-    "unknown peach twintail girl"
-   ]
-  },
-  {
-   "id": "pet09",
-   "name": "Marin Kitagawa & Midnight Devil",
-   "video": "pets/pet09/loop.mp4",
-   "poster": "pets/pet09/poster.jpg",
-   "width": 1080,
-   "height": 810,
-   "durationMs": 18244,
-   "hasAudio": true,
-   "source": "20261029_221322.mp4",
-   "bytes": 11565486,
-   "characters": [
-    "Marin Kitagawa (My Dress-Up Darling)",
-    "unknown black-haired girl"
-   ]
-  },
-  {
    "id": "pet10",
-   "name": "Roxy & Ash Elf",
+   "name": "Roxy & Sylphiette",
    "video": "pets/pet10/loop.mp4",
    "poster": "pets/pet10/poster.jpg",
    "width": 1080,
@@ -157,7 +125,7 @@
    "bytes": 10663425,
    "characters": [
     "Roxy Migurdia (Mushoku Tensei)",
-    "unknown short ash-blond elf"
+    "Sylphiette (Mushoku Tensei)"
    ]
   },
   {
@@ -178,7 +146,7 @@
   },
   {
    "id": "pet12",
-   "name": "Navy Devil & Marin Kitagawa",
+   "name": "Kaoruko Waguri & Marin Kitagawa",
    "video": "pets/pet12/loop.mp4",
    "poster": "pets/pet12/poster.jpg",
    "width": 1080,
@@ -188,13 +156,13 @@
    "source": "20261029_221454.mp4",
    "bytes": 11670782,
    "characters": [
-    "unknown navy-haired girl",
+    "Kaoruko Waguri (The Fragrant Flower Blooms with Dignity)",
     "Marin Kitagawa (My Dress-Up Darling)"
    ]
   },
   {
    "id": "pet13",
-   "name": "Violet Raven & Frost Devil",
+   "name": "Yuki & Alya",
    "video": "pets/pet13/loop.mp4",
    "poster": "pets/pet13/poster.jpg",
    "width": 1080,
@@ -204,8 +172,8 @@
    "source": "20261029_221523.mp4",
    "bytes": 10416174,
    "characters": [
-    "unknown dark-haired girl",
-    "unknown silver-haired girl"
+    "Yuki Suou (Alya Sometimes Hides Her Feelings in Russian)",
+    "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
    ]
   },
   {
@@ -226,7 +194,7 @@
   },
   {
    "id": "pet15",
-   "name": "Eyepatch Sailor Twins",
+   "name": "Phoenix",
    "video": "pets/pet15/loop.mp4",
    "poster": "pets/pet15/poster.jpg",
    "width": 1080,
@@ -236,13 +204,13 @@
    "source": "20261101_001726.mp4",
    "bytes": 16301331,
    "characters": [
-    "unknown eyepatch sailor girl (long hair)",
-    "same girl (short hair)"
+    "Phoenix (Zenless Zone Zero), long hair",
+    "Phoenix (Zenless Zone Zero), short hair"
    ]
   },
   {
    "id": "pet16",
-   "name": "Starry Elf & Violet Devil",
+   "name": "Frieren & Fern",
    "video": "pets/pet16/loop.mp4",
    "poster": "pets/pet16/poster.jpg",
    "width": 1080,
@@ -252,13 +220,13 @@
    "source": "20261101_022447.mp4",
    "bytes": 14739765,
    "characters": [
-    "unknown silver-haired elf (original art)",
-    "unknown purple-haired girl (original art)"
+    "Frieren (Frieren: Beyond Journey's End)",
+    "Fern (Frieren: Beyond Journey's End)"
    ]
   },
   {
    "id": "pet17",
-   "name": "Lavender Braid & Glasses Devil",
+   "name": "Nazuna & Anko",
    "video": "pets/pet17/loop.mp4",
    "poster": "pets/pet17/poster.jpg",
    "width": 1080,
@@ -268,13 +236,13 @@
    "source": "20261101_022515.mp4",
    "bytes": 14318676,
    "characters": [
-    "unknown lavender braid girl (original art)",
-    "unknown glasses redhead (original art)"
+    "Nazuna Nanakusa (Call of the Night)",
+    "Anko Uguisu (Call of the Night)"
    ]
   },
   {
    "id": "pet18",
-   "name": "Ember Braid & Plum Devil",
+   "name": "Makima & Reze",
    "video": "pets/pet18/loop.mp4",
    "poster": "pets/pet18/poster.jpg",
    "width": 1080,
@@ -284,8 +252,8 @@
    "source": "20261101_022600.mp4",
    "bytes": 16805488,
    "characters": [
-    "unknown orange-red braid girl (original art)",
-    "unknown plum-haired green-eyed girl (original art)"
+    "Makima (Chainsaw Man)",
+    "Reze (Chainsaw Man)"
    ]
   },
   {
@@ -306,7 +274,7 @@
   },
   {
    "id": "pet20",
-   "name": "Pale Pink Devil",
+   "name": "Alya",
    "video": "pets/pet20/loop.mp4",
    "poster": "pets/pet20/poster.jpg",
    "width": 1080,
@@ -316,7 +284,7 @@
    "source": "20261101_023013.mp4",
    "bytes": 15726639,
    "characters": [
-    "unknown pink-silver girl, possibly Alya"
+    "Alya Kujou (Alya Sometimes Hides Her Feelings in Russian)"
    ]
   }
  ]

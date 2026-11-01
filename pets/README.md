@@ -29,7 +29,7 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
 
 ## New in 2.2.0
-* **Real names**: every pet is named after its characters (`tools/pet_names.json`, applied by `tools/apply_names.py`). Web search cannot match faces, so identification was by eye: only pets 07, 11, 14, 19 are marked confident; many are best guesses or descriptive labels ("Violet Raven"). Fix any name in the JSON and re-run the script.
+* **Real names**: every pet is named after its characters (`tools/pet_names.json`, applied by `tools/apply_names.py`). Web search cannot match faces, so identification was by eye: names confirmed by the owner for all remaining pets; pets 08 and 09 were removed because their characters could not be identified. Fix any name in the JSON and re-run the script.
 * **Font**: the whole app uses **Liberation Serif**, the open-licence font that is metric-compatible with Times New Roman (Times New Roman itself is proprietary and cannot be bundled). License: `FONT_LICENSE.txt`.
 * **Animated UI**: aurora backdrop with drifting hearts / stars / bubbles, shimmering gradient titles, spinning neon borders, glowing shine buttons, spring entrance animations, bouncy presses, sliding tab transitions with a glowing bounce-select nav bar, confetti when you pick a pet, haptics.
 * **Menu colors**: Settings > Menu colors, 10 palettes (Sakura, Ocean, Sunset, Mint, Lavender, Midnight, Neon, Ember, Forest, Royal Gold). Colours morph live; light and dark palettes; status-bar icons follow.
