@@ -100,18 +100,22 @@ fun shimmerTitle(size: Int = 34): TextStyle {
     return TextStyle(brush = brush, fontSize = size.sp, fontWeight = FontWeight.ExtraBold, fontFamily = PetsFont)
 }
 
-/** Glowing multi-colour border that rotates around [shape]'s rounded rectangle. */
+/** Glowing multi-colour border; the colours (not the rectangle) travel around the rounded rectangle. */
 fun Modifier.neonBorder(corner: Dp, width: Dp = 3.dp, active: Boolean = true, speedMs: Int = 3600): Modifier = composed {
     if (!active) return@composed this
     val p = LocalPalette.current
     val angle by rememberInfiniteTransition(label = "neon").animateFloat(0f, 360f, infiniteRepeatable(tween(speedMs, easing = LinearEasing)), label = "a")
+    val colors = intArrayOf(p.primary.toArgb(), p.accent.toArgb(), p.secondary.toArgb(), p.primary2.toArgb(), p.primary.toArgb())
     drawBehind {
         val cr = CornerRadius(corner.toPx())
-        val brush = Brush.sweepGradient(listOf(p.primary, p.accent, p.secondary, p.primary2, p.primary), center)
-        rotate(angle, center) {
-            drawRoundRect(brush, cornerRadius = cr, style = Stroke(width.toPx() * 3.2f), alpha = 0.22f)
-            drawRoundRect(brush, cornerRadius = cr, style = Stroke(width.toPx()))
+        val brush = object : ShaderBrush() {
+            override fun createShader(size: Size): android.graphics.Shader =
+                android.graphics.SweepGradient(size.width / 2f, size.height / 2f, colors, null).also {
+                    it.setLocalMatrix(android.graphics.Matrix().apply { setRotate(angle, size.width / 2f, size.height / 2f) })
+                }
         }
+        drawRoundRect(brush, cornerRadius = cr, style = Stroke(width.toPx() * 3.2f), alpha = 0.22f)
+        drawRoundRect(brush, cornerRadius = cr, style = Stroke(width.toPx()))
     }
 }
 

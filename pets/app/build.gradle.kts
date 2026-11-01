@@ -35,6 +35,9 @@ android {
         }
     }
 
+    // ./gradlew -Plite ... builds with only 3 pets (src/lite/assets, git-ignored): for slow emulators
+    if (project.hasProperty("lite")) sourceSets.getByName("main").assets.setSrcDirs(listOf("src/lite/assets"))
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

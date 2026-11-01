@@ -79,6 +79,7 @@ fun GlassCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.()
         modifier = modifier.shadow(if (p.dark) 0.dp else 12.dp, RoundedCornerShape(26.dp), ambientColor = p.primary.copy(alpha = 0.3f), spotColor = p.primary.copy(alpha = 0.3f)),
         shape = RoundedCornerShape(26.dp),
         color = p.surface.copy(alpha = if (p.dark) 0.78f else 0.9f),
+        contentColor = p.onSurface,
         border = BorderStroke(1.dp, Brush.linearGradient(listOf(p.primary.copy(alpha = 0.55f), p.secondary.copy(alpha = 0.25f), p.primary2.copy(alpha = 0.55f)))),
     ) { Column(content = content) }
 }

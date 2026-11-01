@@ -8,3 +8,4 @@ local.properties
 app/build/
 source_videos/
 dist/*.apk
+app/src/lite/
