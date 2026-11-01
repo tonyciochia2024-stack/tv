@@ -12,7 +12,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -46,7 +53,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (intent?.getBooleanExtra(EXTRA_RESUME_PET, false) == true) vm.showPet()   // tapped the "bring your pet back" notification
-        setContent { PetsTheme { PetsApp(vm) } }
+        setContent { PetsApp(vm) }
     }
 
     override fun onResume() {
@@ -70,10 +77,23 @@ private enum class Tab(val label: String) { Home("Home"), Characters("Pets"), Se
 @Composable
 private fun PetsApp(vm: PetsViewModel) {
     val ui by vm.state.collectAsStateWithLifecycle()
+    PetsTheme(ui.settings.paletteId) { PetsShell(vm, ui) }
+}
+
+@Composable
+private fun PetsShell(vm: PetsViewModel, ui: UiState) {
     val ctx = LocalContext.current
+    val p = LocalPalette.current
+    val haptic = LocalHapticFeedback.current
+    val confetti = remember { Confetti() }
     var tab by rememberSaveable { mutableStateOf(Tab.Home) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshSystemState() }
+    val view = LocalView.current
+    SideEffect {   // status / navigation bar icons readable on light and dark palettes
+        val w = (ctx as android.app.Activity).window
+        WindowCompat.getInsetsController(w, view).apply { isAppearanceLightStatusBars = !p.dark; isAppearanceLightNavigationBars = !p.dark }
+    }
 
     val notifLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.showPet() }
     val onShow: () -> Unit = {
@@ -88,30 +108,44 @@ private fun PetsApp(vm: PetsViewModel) {
         ctx.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${ctx.packageName}")))
     }
 
-    Box(Modifier.fillMaxSize().background(appBackground())) {
-        Crossfade(tab, label = "tab") { t ->
-            when (t) {
-                Tab.Home -> HomeScreen(ui, vm, onShow, { vm.hidePet() }, { tab = Tab.Characters }, openOverlaySettings)
-                Tab.Characters -> CharactersScreen(ui, vm) { tab = Tab.Home }
-                Tab.Settings -> SettingsScreen(ui, vm, openOverlaySettings)
+    CompositionLocalProvider(LocalConfetti provides confetti) {
+        Box(Modifier.fillMaxSize()) {
+            AnimatedBackdrop()
+            AnimatedContent(
+                targetState = tab, label = "tab",
+                transitionSpec = {
+                    val dir = if (targetState.ordinal > initialState.ordinal) 1 else -1
+                    (slideInHorizontally(spring(0.8f, 300f)) { dir * it / 3 } + fadeIn(tween(350)) + scaleIn(tween(350), 0.92f)) togetherWith
+                        (slideOutHorizontally(tween(300)) { -dir * it / 4 } + fadeOut(tween(200)) + scaleOut(tween(300), 0.92f))
+                },
+            ) { t ->
+                when (t) {
+                    Tab.Home -> HomeScreen(ui, vm, onShow, { vm.hidePet() }, { tab = Tab.Characters }, openOverlaySettings)
+                    Tab.Characters -> CharactersScreen(ui, vm) { tab = Tab.Home }
+                    Tab.Settings -> SettingsScreen(ui, vm, openOverlaySettings)
+                }
             }
-        }
-        // floating pill navigation
-        Surface(
-            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 24.dp, vertical = 12.dp),
-            shape = RoundedCornerShape(32.dp), shadowElevation = 14.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
-        ) {
-            Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Tab.entries.forEach { t ->
-                    val sel = tab == t
-                    Row(
-                        Modifier.clip(RoundedCornerShape(26.dp)).background(if (sel) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
-                            .clickable(onClickLabel = t.label) { tab = t }.heightIn(min = 48.dp).padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Icon(when (t) { Tab.Home -> Icons.Default.Home; Tab.Characters -> Icons.Default.Favorite; Tab.Settings -> Icons.Default.Settings }, null,
-                            tint = if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
-                        if (sel) Text(t.label, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            ConfettiLayer(confetti)
+            // floating pill navigation with a glowing, bouncing selection
+            Surface(
+                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 24.dp, vertical = 14.dp).neonBorder(32.dp, 2.dp, speedMs = 6000),
+                shape = RoundedCornerShape(32.dp), shadowElevation = 16.dp, color = p.surface.copy(alpha = 0.94f),
+            ) {
+                Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Tab.entries.forEach { t ->
+                        val sel = tab == t
+                        val bg by animateColorAsState(if (sel) p.primary.copy(alpha = 0.2f) else Color.Transparent, tween(300), label = "tabbg")
+                        val sc by animateFloatAsState(if (sel) 1.2f else 1f, spring(0.3f, 450f), label = "tabsc")
+                        Row(
+                            Modifier.clip(RoundedCornerShape(26.dp)).background(bg)
+                                .clickable(onClickLabel = t.label) { haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove); tab = t }
+                                .heightIn(min = 50.dp).padding(horizontal = 16.dp).animateContentSize(spring(0.7f, 400f)),
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp),
+                        ) {
+                            Icon(when (t) { Tab.Home -> Icons.Default.Home; Tab.Characters -> Icons.Default.Favorite; Tab.Settings -> Icons.Default.Settings }, t.label,
+                                Modifier.graphicsLayer { scaleX = sc; scaleY = sc }, tint = if (sel) p.primary else p.muted)
+                            if (sel) Text(t.label, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp, color = p.primary)
+                        }
                     }
                 }
             }

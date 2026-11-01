@@ -1,73 +1,84 @@
 package com.pets.desktoppets.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pets.desktoppets.R
 
-// Palette from the launcher icon: auburn hair, sapphire eyes, navy blazer, sky vest, lime skirt.
-val Hair = Color(0xFFE2512F)
-val HairLight = Color(0xFFFF8A5B)
-val Eyes = Color(0xFF4B63E0)
-val Navy = Color(0xFF2A2840)
-val Cream = Color(0xFFFFF6F0)
-val Peach = Color(0xFFFFE3D6)
-val Sky = Color(0xFF7CC4E8)
-val Mint = Color(0xFF55C28A)
+/** Base font of the whole app: Liberation Serif, the open Times New Roman-compatible serif (same metrics and look). */
+val PetsFont = FontFamily(
+    Font(R.font.serif_regular, FontWeight.Normal), Font(R.font.serif_regular, FontWeight.Medium),
+    Font(R.font.serif_bold, FontWeight.SemiBold), Font(R.font.serif_bold, FontWeight.Bold), Font(R.font.serif_bold, FontWeight.ExtraBold),
+    Font(R.font.serif_italic, FontWeight.Normal, FontStyle.Italic), Font(R.font.serif_bolditalic, FontWeight.Bold, FontStyle.Italic),
+)
 
-private val light = lightColorScheme(
-    primary = Hair, onPrimary = Color.White, primaryContainer = Peach, onPrimaryContainer = Color(0xFF5A1F0F),
-    secondary = Eyes, onSecondary = Color.White, secondaryContainer = Color(0xFFDDE4FF), onSecondaryContainer = Color(0xFF0F1D5A),
-    tertiary = Mint, background = Cream, onBackground = Navy, surface = Color.White, onSurface = Navy,
-    surfaceVariant = Color(0xFFFFEDE4), onSurfaceVariant = Color(0xFF5B5568), error = Color(0xFFB3261E),
-)
-private val dark = darkColorScheme(
-    primary = Color(0xFFFF8A68), onPrimary = Color(0xFF4A1500), primaryContainer = Color(0xFF5A2A1C), onPrimaryContainer = Color(0xFFFFDBCF),
-    secondary = Color(0xFFB7C4FF), onSecondary = Color(0xFF0F1D5A), secondaryContainer = Color(0xFF2C3A7A), onSecondaryContainer = Color(0xFFDDE4FF),
-    tertiary = Mint, background = Color(0xFF14101C), onBackground = Color(0xFFEDE6F2), surface = Color(0xFF1F1A2A), onSurface = Color(0xFFEDE6F2),
-    surfaceVariant = Color(0xFF2A2433), onSurfaceVariant = Color(0xFFCBC3D4), error = Color(0xFFFFB4AB),
-)
+private fun Typography.serif(): Typography {
+    fun TextStyle.f() = copy(fontFamily = PetsFont)
+    return Typography(
+        displayLarge = displayLarge.f(), displayMedium = displayMedium.f(), displaySmall = displaySmall.f(),
+        headlineLarge = headlineLarge.f(), headlineMedium = headlineMedium.f(), headlineSmall = headlineSmall.f(),
+        titleLarge = titleLarge.f(), titleMedium = titleMedium.f().copy(fontSize = 18.sp), titleSmall = titleSmall.f(),
+        bodyLarge = bodyLarge.f().copy(fontSize = 18.sp), bodyMedium = bodyMedium.f().copy(fontSize = 17.sp, lineHeight = 23.sp),
+        bodySmall = bodySmall.f().copy(fontSize = 15.sp), labelLarge = labelLarge.f().copy(fontSize = 17.sp),
+        labelMedium = labelMedium.f().copy(fontSize = 15.sp), labelSmall = labelSmall.f().copy(fontSize = 13.sp),
+    )
+}
+
 private val shapes = Shapes(small = RoundedCornerShape(14.dp), medium = RoundedCornerShape(22.dp), large = RoundedCornerShape(30.dp))
 
+private fun PetsPalette.scheme(): ColorScheme {
+    val onP = if (primary.luminance() > 0.55f) Color(0xFF1A1420) else Color.White
+    return if (dark) darkColorScheme(
+        primary = primary, onPrimary = onP, primaryContainer = container, onPrimaryContainer = onSurface,
+        secondary = secondary, onSecondary = Color.White, secondaryContainer = container, onSecondaryContainer = onSurface,
+        tertiary = accent, background = bg2, onBackground = onSurface, surface = surface, onSurface = onSurface,
+        surfaceVariant = container, onSurfaceVariant = muted, outline = muted.copy(alpha = 0.6f), error = Color(0xFFFF8A80),
+    ) else lightColorScheme(
+        primary = primary, onPrimary = onP, primaryContainer = container, onPrimaryContainer = onSurface,
+        secondary = secondary, onSecondary = Color.White, secondaryContainer = container, onSecondaryContainer = onSurface,
+        tertiary = accent, background = bg2, onBackground = onSurface, surface = surface, onSurface = onSurface,
+        surfaceVariant = container, onSurfaceVariant = muted, outline = muted.copy(alpha = 0.6f), error = Color(0xFFB3261E),
+    )
+}
+
 @Composable
-fun PetsTheme(content: @Composable () -> Unit) =
-    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) dark else light, shapes = shapes, content = content)
-
-/** Whole-app backdrop. */
-@Composable
-fun appBackground(): Brush = if (isSystemInDarkTheme())
-    Brush.verticalGradient(listOf(Color(0xFF241A33), Color(0xFF14101C), Color(0xFF111A2E)))
-else Brush.verticalGradient(listOf(Color(0xFFFFE9DD), Color(0xFFFFF6F0), Color(0xFFE9EEFF)))
-
-val BrandGradient = Brush.horizontalGradient(listOf(Hair, HairLight))
+fun PetsTheme(paletteId: String, content: @Composable () -> Unit) {
+    val p = animatedPalette(paletteById(paletteId))
+    CompositionLocalProvider(LocalPalette provides p) {
+        MaterialTheme(colorScheme = p.scheme(), typography = Typography().serif(), shapes = shapes, content = content)
+    }
+}
 
 @Composable
-fun brandTitle(size: Int = 32) = TextStyle(brush = BrandGradient, fontSize = size.sp, fontWeight = FontWeight.ExtraBold)
+fun brandGradient(): Brush = LocalPalette.current.let { Brush.horizontalGradient(listOf(it.primary, it.primary2)) }
 
 @Composable
-fun accent(): Color = MaterialTheme.colorScheme.primary
+fun accent(): Color = LocalPalette.current.primary
 
-/** Soft rounded card with a glassy border. */
+/** Soft rounded card with a glassy border and a glow in the palette colour. */
 @Composable
 fun GlassCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    val dark = isSystemInDarkTheme()
+    val p = LocalPalette.current
     Surface(
-        modifier = modifier.shadow(if (dark) 0.dp else 10.dp, RoundedCornerShape(26.dp), ambientColor = Hair.copy(alpha = 0.25f), spotColor = Hair.copy(alpha = 0.25f)),
+        modifier = modifier.shadow(if (p.dark) 0.dp else 12.dp, RoundedCornerShape(26.dp), ambientColor = p.primary.copy(alpha = 0.3f), spotColor = p.primary.copy(alpha = 0.3f)),
         shape = RoundedCornerShape(26.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = if (dark) 0.85f else 0.92f),
-        border = BorderStroke(1.dp, if (dark) Color.White.copy(alpha = 0.08f) else Color.White),
+        color = p.surface.copy(alpha = if (p.dark) 0.78f else 0.9f),
+        border = BorderStroke(1.dp, Brush.linearGradient(listOf(p.primary.copy(alpha = 0.55f), p.secondary.copy(alpha = 0.25f), p.primary2.copy(alpha = 0.55f)))),
     ) { Column(content = content) }
 }

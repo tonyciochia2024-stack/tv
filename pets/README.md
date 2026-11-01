@@ -5,10 +5,10 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 
 | | |
 |---|---|
-| Package | `com.pets.desktoppets` · name **Pets** · v2.0.0 |
+| Package | `com.pets.desktoppets` · name **Pets** · v2.2.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
-| APKs | `dist/Pets-2.1.0-release.apk` (238 MB, not committed: build it or get it from the chat) |
+| APKs | `dist/Pets-2.2.0-release.apk` (238 MB, not committed: build it or get it from the chat) |
 
 ## Install
 ```
@@ -27,6 +27,12 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 * UI state reflects the real service/overlay (`PetState`), never a saved flag alone: *Active / Starting / Hidden / Pet stopped*.
 * Revoking the overlay permission stops the service cleanly (AppOps watcher); the rest of the app keeps working.
 * Rendering stops while the screen is off or the pet is hidden; frames are decoded one at a time into two reusable bitmaps.
+
+## New in 2.2.0
+* **Real names**: every pet is named after its characters (`tools/pet_names.json`, applied by `tools/apply_names.py`). Web search cannot match faces, so identification was by eye: only pets 07, 11, 14, 19 are marked confident; many are best guesses or descriptive labels ("Violet Raven"). Fix any name in the JSON and re-run the script.
+* **Font**: the whole app uses **Liberation Serif**, the open-licence font that is metric-compatible with Times New Roman (Times New Roman itself is proprietary and cannot be bundled). License: `FONT_LICENSE.txt`.
+* **Animated UI**: aurora backdrop with drifting hearts / stars / bubbles, shimmering gradient titles, spinning neon borders, glowing shine buttons, spring entrance animations, bouncy presses, sliding tab transitions with a glowing bounce-select nav bar, confetti when you pick a pet, haptics.
+* **Menu colors**: Settings > Menu colors, 10 palettes (Sakura, Ocean, Sunset, Mint, Lavender, Midnight, Neon, Ember, Forest, Royal Gold). Colours morph live; light and dark palettes; status-bar icons follow.
 
 ## New in 2.0.0 (video pets)
 Background removal was given up. The pets are now **the supplied videos exactly as recorded**, played in a rounded floating window:

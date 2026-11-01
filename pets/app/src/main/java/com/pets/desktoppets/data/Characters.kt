@@ -16,6 +16,8 @@ data class CharacterInfo(
     val height: Int,
     val durationMs: Long,
     val hasAudio: Boolean,
+    /** The characters shown in the clip (best effort, see tools/pet_names.json). */
+    val characters: List<String> = emptyList(),
 ) {
     val aspect: Float get() = width.toFloat() / height
     val videoUri: String get() = "asset:///$videoPath"
@@ -51,6 +53,7 @@ class CharacterRepository(private val context: Context) {
                         videoPath = o.getString("video"), posterPath = o.getString("poster"),
                         width = o.getInt("width"), height = o.getInt("height"),
                         durationMs = o.getLong("durationMs"), hasAudio = o.optBoolean("hasAudio", true),
+                        characters = o.optJSONArray("characters")?.let { a -> List(a.length()) { a.getString(it) } } ?: emptyList(),
                     )
                     context.assets.openFd(info.videoPath).close()   // skip entries whose video is missing
                     add(info)

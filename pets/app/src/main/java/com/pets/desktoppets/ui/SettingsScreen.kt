@@ -9,10 +9,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,6 +30,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> Unit) {
+    sectionIndex = 0
     val ctx = LocalContext.current
     var size by remember(ui.settings.sizeDp) { mutableFloatStateOf(ui.settings.sizeDp.toFloat()) }
     var volume by remember(ui.settings.volume) { mutableFloatStateOf(ui.settings.volume.toFloat()) }
@@ -34,7 +40,12 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
         Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, style = brandTitle(30))
+        Text("Settings", style = shimmerTitle(36), modifier = Modifier.entrance(0))
+
+        Section("Menu colors") {
+            Text("Pick a look for the whole app. It changes live.", style = MaterialTheme.typography.bodySmall, color = LocalPalette.current.muted)
+            PalettePicker(ui.settings.paletteId) { vm.setPalette(it) }
+        }
 
         Section("Pet size") {
             Text("${size.roundToInt()} dp tall (default $DEFAULT_SIZE_DP dp)", fontWeight = FontWeight.SemiBold)
@@ -136,10 +147,38 @@ fun SettingsScreen(ui: UiState, vm: PetsViewModel, onOpenOverlaySettings: () -> 
 
 @Composable
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
-    GlassCard(Modifier.fillMaxWidth()) {
+    GlassCard(Modifier.fillMaxWidth().entrance(sectionIndex++, title)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 17.sp, color = MaterialTheme.colorScheme.secondary)
+            Text(title, fontWeight = FontWeight.ExtraBold, fontSize = 21.sp, color = MaterialTheme.colorScheme.primary)
             content()
+        }
+    }
+}
+
+private var sectionIndex = 0
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PalettePicker(selectedId: String, onPick: (String) -> Unit) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    androidx.compose.foundation.layout.FlowRow(
+        Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Palettes.forEach { pal ->
+            val sel = pal.id == selectedId
+            val pop by androidx.compose.animation.core.animateFloatAsState(if (sel) 1.12f else 1f, androidx.compose.animation.core.spring(0.35f, 400f), label = "pop")
+            Column(
+                Modifier.width(62.dp).bouncy { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress); onPick(pal.id) },
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                Box(
+                    Modifier.size(54.dp).graphicsLayer { scaleX = pop; scaleY = pop }.neonBorder(27.dp, 3.dp, active = sel, speedMs = 2200).padding(4.dp)
+                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(pal.bg1, pal.primary, pal.secondary, pal.accent))),
+                    contentAlignment = Alignment.Center,
+                ) { if (sel) Text("✓", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp) }
+                Text(pal.name, fontSize = 13.sp, fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal, maxLines = 1, color = LocalPalette.current.onSurface)
+            }
         }
     }
 }

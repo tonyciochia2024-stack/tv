@@ -35,6 +35,7 @@ data class PetSettings(
     /** The song inside each pet video. */
     val soundOn: Boolean = true,
     val volume: Int = 60,
+    val paletteId: String = "sakura",
 )
 
 class PetPrefs(context: Context) {
@@ -53,6 +54,7 @@ class PetPrefs(context: Context) {
         val onboarding = booleanPreferencesKey("onboarding_done")
         val sound = booleanPreferencesKey("sound_on")
         val volume = intPreferencesKey("volume")
+        val palette = stringPreferencesKey("palette")
     }
 
     val flow: Flow<PetSettings> = store.data.map { p ->
@@ -69,6 +71,7 @@ class PetPrefs(context: Context) {
             onboardingDone = p[K.onboarding] ?: false,
             soundOn = p[K.sound] ?: true,
             volume = (p[K.volume] ?: 60).coerceIn(0, 100),
+            paletteId = p[K.palette] ?: "sakura",
         )
     }
 
@@ -80,6 +83,7 @@ class PetPrefs(context: Context) {
     suspend fun setRestoreOnBoot(v: Boolean) = store.edit { it[K.restore] = v }
     suspend fun setWantActive(v: Boolean) = store.edit { it[K.want] = v }
     suspend fun setOpacity(percent: Int) = store.edit { it[K.opacity] = percent.coerceIn(MIN_OPACITY, 100) }
+    suspend fun setPalette(id: String) = store.edit { it[K.palette] = id }
     suspend fun setSound(v: Boolean) = store.edit { it[K.sound] = v }
     suspend fun setVolume(v: Int) = store.edit { it[K.volume] = v.coerceIn(0, 100) }
     suspend fun setShuffle(v: Boolean) = store.edit { it[K.shuffle] = v }
