@@ -182,6 +182,66 @@
    "hasAudio": true,
    "source": "20261101_001726.mp4",
    "bytes": 16301331
+  },
+  {
+   "id": "pet16",
+   "name": "Pet 16",
+   "video": "pets/pet16/loop.mp4",
+   "poster": "pets/pet16/poster.jpg",
+   "width": 1080,
+   "height": 1066,
+   "durationMs": 17859,
+   "hasAudio": true,
+   "source": "20261101_022447.mp4",
+   "bytes": 14739765
+  },
+  {
+   "id": "pet17",
+   "name": "Pet 17",
+   "video": "pets/pet17/loop.mp4",
+   "poster": "pets/pet17/poster.jpg",
+   "width": 1080,
+   "height": 1076,
+   "durationMs": 17985,
+   "hasAudio": true,
+   "source": "20261101_022515.mp4",
+   "bytes": 14318676
+  },
+  {
+   "id": "pet18",
+   "name": "Pet 18",
+   "video": "pets/pet18/loop.mp4",
+   "poster": "pets/pet18/poster.jpg",
+   "width": 1080,
+   "height": 1080,
+   "durationMs": 18077,
+   "hasAudio": true,
+   "source": "20261101_022600.mp4",
+   "bytes": 16805488
+  },
+  {
+   "id": "pet19",
+   "name": "Pet 19",
+   "video": "pets/pet19/loop.mp4",
+   "poster": "pets/pet19/poster.jpg",
+   "width": 1080,
+   "height": 808,
+   "durationMs": 18252,
+   "hasAudio": true,
+   "source": "20261101_022928.mp4",
+   "bytes": 11996082
+  },
+  {
+   "id": "pet20",
+   "name": "Pet 20",
+   "video": "pets/pet20/loop.mp4",
+   "poster": "pets/pet20/poster.jpg",
+   "width": 1080,
+   "height": 808,
+   "durationMs": 18208,
+   "hasAudio": true,
+   "source": "20261101_023013.mp4",
+   "bytes": 15726639
   }
  ]
 }

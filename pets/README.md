@@ -8,7 +8,7 @@ apps as a **transparent, draggable** overlay. 25 characters, fully offline, no a
 | Package | `com.pets.desktoppets` · name **Pets** · v2.0.0 |
 | SDK | minSdk 26 (Android 8.0) · target/compile 35 |
 | Stack | Kotlin 2.0.21, Jetpack Compose (Material 3), DataStore, a plain `View` + `WindowManager` overlay |
-| APKs | `dist/Pets-2.0.0-release.apk` (164 MB, not committed: build it or get it from the chat) |
+| APKs | `dist/Pets-2.1.0-release.apk` (238 MB, not committed: build it or get it from the chat) |
 
 ## Install
 ```
@@ -30,7 +30,7 @@ screen *Display over other apps*. Return to the app (it re-checks on resume) and
 
 ## New in 2.0.0 (video pets)
 Background removal was given up. The pets are now **the supplied videos exactly as recorded**, played in a rounded floating window:
-* **15 pets** = 15 videos (14 earlier ones + `Screen_Recording_20261101_001726_TikTok.mp4`). Nothing missing. Pet 14 is the 502x372 CapCut clip, 2x Lanczos-upscaled.
+* **20 pets** (15 earlier + 5 added in 2.1.0) = 20 videos; 15 videos (14 earlier ones + `Screen_Recording_20261101_001726_TikTok.mp4`). Nothing missing. Pet 14 is the 502x372 CapCut clip, 2x Lanczos-upscaled.
 * **Seamless loop**: `tools/build_videos.py` cross-fades the last 0.6 s into the first 0.6 s (picture *and* song), so the end flows into the start. Constant 30 fps, H.264 CRF 19 at the source's full 1080 px width, AAC song loudness-normalised.
 * **Song setting**: Settings > Song (on/off + volume) and a quick chip on Home. Only the floating pet plays sound; in-app previews are silent.
 * Player: AndroidX Media3 ExoPlayer (`REPEAT_MODE_ONE`), pauses while the screen is off.
