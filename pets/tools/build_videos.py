@@ -72,5 +72,10 @@ mf = out / "manifest.json"
 if a.only and mf.exists():
     old = {m["id"]: m for m in json.load(open(mf))["pets"]}
     old.update({m["id"]: m for m in man}); man = [old[k] for k in sorted(old)]
+_nm = Path(__file__).resolve().parent / "pet_names.json"
+if _nm.exists():
+    _n = json.load(open(_nm))
+    for m_ in man:
+        if m_["id"] in _n: m_["name"] = _n[m_["id"]]["name"]; m_["characters"] = _n[m_["id"]]["characters"]
 json.dump({"version": 2, "format": "mp4-loop", "crossfadeSec": d, "pets": man}, open(mf, "w"), indent=1)
 print(len(man), "pets,", f"{sum(m['bytes'] for m in man)/1e6:.0f} MB")

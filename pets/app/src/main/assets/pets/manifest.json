@@ -5,7 +5,7 @@
  "pets": [
   {
    "id": "pet01",
-   "name": "Pet 01",
+   "name": "Alya & Raven Devil",
    "video": "pets/pet01/loop.mp4",
    "poster": "pets/pet01/poster.jpg",
    "width": 1080,
@@ -13,11 +13,15 @@
    "durationMs": 17705,
    "hasAudio": true,
    "source": "20261029_220753.mp4",
-   "bytes": 11680412
+   "bytes": 11680412,
+   "characters": [
+    "Alya (Roshidere)",
+    "unknown black-haired girl"
+   ]
   },
   {
    "id": "pet02",
-   "name": "Pet 02",
+   "name": "Roxy & Eris",
    "video": "pets/pet02/loop.mp4",
    "poster": "pets/pet02/poster.jpg",
    "width": 1080,
@@ -25,11 +29,15 @@
    "durationMs": 17966,
    "hasAudio": true,
    "source": "20261029_220824.mp4",
-   "bytes": 9958243
+   "bytes": 9958243,
+   "characters": [
+    "Roxy Migurdia (Mushoku Tensei)",
+    "Eris Greyrat (Mushoku Tensei)"
+   ]
   },
   {
    "id": "pet03",
-   "name": "Pet 03",
+   "name": "Crimson Devil & Angel",
    "video": "pets/pet03/loop.mp4",
    "poster": "pets/pet03/poster.jpg",
    "width": 1080,
@@ -37,11 +45,15 @@
    "durationMs": 17397,
    "hasAudio": true,
    "source": "20261029_220904.mp4",
-   "bytes": 7951185
+   "bytes": 7951185,
+   "characters": [
+    "unknown red-haired girl, devil form",
+    "same girl, angel form"
+   ]
   },
   {
    "id": "pet04",
-   "name": "Pet 04",
+   "name": "Miku Nakano",
    "video": "pets/pet04/loop.mp4",
    "poster": "pets/pet04/poster.jpg",
    "width": 1080,
@@ -49,11 +61,14 @@
    "durationMs": 15610,
    "hasAudio": true,
    "source": "20261029_221001.mp4",
-   "bytes": 5805764
+   "bytes": 5805764,
+   "characters": [
+    "Miku Nakano (The Quintessential Quintuplets)"
+   ]
   },
   {
    "id": "pet05",
-   "name": "Pet 05",
+   "name": "Rabbit Hat Devil & Sparkle",
    "video": "pets/pet05/loop.mp4",
    "poster": "pets/pet05/poster.jpg",
    "width": 1080,
@@ -61,11 +76,15 @@
    "durationMs": 18571,
    "hasAudio": true,
    "source": "20261029_221031.mp4",
-   "bytes": 14461376
+   "bytes": 14461376,
+   "characters": [
+    "unknown white-haired girl with rabbit top hat",
+    "Sparkle (Honkai: Star Rail)"
+   ]
   },
   {
    "id": "pet06",
-   "name": "Pet 06",
+   "name": "Nino Nakano",
    "video": "pets/pet06/loop.mp4",
    "poster": "pets/pet06/poster.jpg",
    "width": 1080,
@@ -73,11 +92,14 @@
    "durationMs": 15587,
    "hasAudio": true,
    "source": "20261029_221142.mp4",
-   "bytes": 6352095
+   "bytes": 6352095,
+   "characters": [
+    "Nino Nakano (The Quintessential Quintuplets)"
+   ]
   },
   {
    "id": "pet07",
-   "name": "Pet 07",
+   "name": "Itsuki Nakano",
    "video": "pets/pet07/loop.mp4",
    "poster": "pets/pet07/poster.jpg",
    "width": 1080,
@@ -85,11 +107,14 @@
    "durationMs": 15689,
    "hasAudio": true,
    "source": "20261029_221210.mp4",
-   "bytes": 6615004
+   "bytes": 6615004,
+   "characters": [
+    "Itsuki Nakano (The Quintessential Quintuplets)"
+   ]
   },
   {
    "id": "pet08",
-   "name": "Pet 08",
+   "name": "Honey Wave & Peach Twintails",
    "video": "pets/pet08/loop.mp4",
    "poster": "pets/pet08/poster.jpg",
    "width": 1080,
@@ -97,11 +122,15 @@
    "durationMs": 18184,
    "hasAudio": true,
    "source": "20261029_221247.mp4",
-   "bytes": 12072752
+   "bytes": 12072752,
+   "characters": [
+    "unknown brown wavy-haired girl",
+    "unknown peach twintail girl"
+   ]
   },
   {
    "id": "pet09",
-   "name": "Pet 09",
+   "name": "Marin Kitagawa & Midnight Devil",
    "video": "pets/pet09/loop.mp4",
    "poster": "pets/pet09/poster.jpg",
    "width": 1080,
@@ -109,11 +138,15 @@
    "durationMs": 18244,
    "hasAudio": true,
    "source": "20261029_221322.mp4",
-   "bytes": 11565486
+   "bytes": 11565486,
+   "characters": [
+    "Marin Kitagawa (My Dress-Up Darling)",
+    "unknown black-haired girl"
+   ]
   },
   {
    "id": "pet10",
-   "name": "Pet 10",
+   "name": "Roxy & Ash Elf",
    "video": "pets/pet10/loop.mp4",
    "poster": "pets/pet10/poster.jpg",
    "width": 1080,
@@ -121,11 +154,15 @@
    "durationMs": 18209,
    "hasAudio": true,
    "source": "20261029_221348.mp4",
-   "bytes": 10663425
+   "bytes": 10663425,
+   "characters": [
+    "Roxy Migurdia (Mushoku Tensei)",
+    "unknown short ash-blond elf"
+   ]
   },
   {
    "id": "pet11",
-   "name": "Pet 11",
+   "name": "Rei Ayanami & Asuka Langley",
    "video": "pets/pet11/loop.mp4",
    "poster": "pets/pet11/poster.jpg",
    "width": 1080,
@@ -133,11 +170,15 @@
    "durationMs": 18264,
    "hasAudio": true,
    "source": "20261029_221421.mp4",
-   "bytes": 10518506
+   "bytes": 10518506,
+   "characters": [
+    "Rei Ayanami (Evangelion)",
+    "Asuka Langley Soryu (Evangelion)"
+   ]
   },
   {
    "id": "pet12",
-   "name": "Pet 12",
+   "name": "Navy Devil & Marin Kitagawa",
    "video": "pets/pet12/loop.mp4",
    "poster": "pets/pet12/poster.jpg",
    "width": 1080,
@@ -145,11 +186,15 @@
    "durationMs": 18756,
    "hasAudio": true,
    "source": "20261029_221454.mp4",
-   "bytes": 11670782
+   "bytes": 11670782,
+   "characters": [
+    "unknown navy-haired girl",
+    "Marin Kitagawa (My Dress-Up Darling)"
+   ]
   },
   {
    "id": "pet13",
-   "name": "Pet 13",
+   "name": "Violet Raven & Frost Devil",
    "video": "pets/pet13/loop.mp4",
    "poster": "pets/pet13/poster.jpg",
    "width": 1080,
@@ -157,11 +202,15 @@
    "durationMs": 18173,
    "hasAudio": true,
    "source": "20261029_221523.mp4",
-   "bytes": 10416174
+   "bytes": 10416174,
+   "characters": [
+    "unknown dark-haired girl",
+    "unknown silver-haired girl"
+   ]
   },
   {
    "id": "pet14",
-   "name": "Pet 14",
+   "name": "Nino & Miku Nakano",
    "video": "pets/pet14/loop.mp4",
    "poster": "pets/pet14/poster.jpg",
    "width": 1004,
@@ -169,11 +218,15 @@
    "durationMs": 20896,
    "hasAudio": true,
    "source": "20261029_223904.mp4",
-   "bytes": 14820945
+   "bytes": 14820945,
+   "characters": [
+    "Nino Nakano (The Quintessential Quintuplets)",
+    "Miku Nakano (The Quintessential Quintuplets)"
+   ]
   },
   {
    "id": "pet15",
-   "name": "Pet 15",
+   "name": "Eyepatch Sailor Twins",
    "video": "pets/pet15/loop.mp4",
    "poster": "pets/pet15/poster.jpg",
    "width": 1080,
@@ -181,11 +234,15 @@
    "durationMs": 18485,
    "hasAudio": true,
    "source": "20261101_001726.mp4",
-   "bytes": 16301331
+   "bytes": 16301331,
+   "characters": [
+    "unknown eyepatch sailor girl (long hair)",
+    "same girl (short hair)"
+   ]
   },
   {
    "id": "pet16",
-   "name": "Pet 16",
+   "name": "Starry Elf & Violet Devil",
    "video": "pets/pet16/loop.mp4",
    "poster": "pets/pet16/poster.jpg",
    "width": 1080,
@@ -193,11 +250,15 @@
    "durationMs": 17859,
    "hasAudio": true,
    "source": "20261101_022447.mp4",
-   "bytes": 14739765
+   "bytes": 14739765,
+   "characters": [
+    "unknown silver-haired elf (original art)",
+    "unknown purple-haired girl (original art)"
+   ]
   },
   {
    "id": "pet17",
-   "name": "Pet 17",
+   "name": "Lavender Braid & Glasses Devil",
    "video": "pets/pet17/loop.mp4",
    "poster": "pets/pet17/poster.jpg",
    "width": 1080,
@@ -205,11 +266,15 @@
    "durationMs": 17985,
    "hasAudio": true,
    "source": "20261101_022515.mp4",
-   "bytes": 14318676
+   "bytes": 14318676,
+   "characters": [
+    "unknown lavender braid girl (original art)",
+    "unknown glasses redhead (original art)"
+   ]
   },
   {
    "id": "pet18",
-   "name": "Pet 18",
+   "name": "Ember Braid & Plum Devil",
    "video": "pets/pet18/loop.mp4",
    "poster": "pets/pet18/poster.jpg",
    "width": 1080,
@@ -217,11 +282,15 @@
    "durationMs": 18077,
    "hasAudio": true,
    "source": "20261101_022600.mp4",
-   "bytes": 16805488
+   "bytes": 16805488,
+   "characters": [
+    "unknown orange-red braid girl (original art)",
+    "unknown plum-haired green-eyed girl (original art)"
+   ]
   },
   {
    "id": "pet19",
-   "name": "Pet 19",
+   "name": "Kasane Teto & Hatsune Miku",
    "video": "pets/pet19/loop.mp4",
    "poster": "pets/pet19/poster.jpg",
    "width": 1080,
@@ -229,11 +298,15 @@
    "durationMs": 18252,
    "hasAudio": true,
    "source": "20261101_022928.mp4",
-   "bytes": 11996082
+   "bytes": 11996082,
+   "characters": [
+    "Kasane Teto (UTAU)",
+    "Hatsune Miku (Vocaloid)"
+   ]
   },
   {
    "id": "pet20",
-   "name": "Pet 20",
+   "name": "Pale Pink Devil",
    "video": "pets/pet20/loop.mp4",
    "poster": "pets/pet20/poster.jpg",
    "width": 1080,
@@ -241,7 +314,10 @@
    "durationMs": 18208,
    "hasAudio": true,
    "source": "20261101_023013.mp4",
-   "bytes": 15726639
+   "bytes": 15726639,
+   "characters": [
+    "unknown pink-silver girl, possibly Alya"
+   ]
   }
  ]
 }
