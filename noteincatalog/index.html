@@ -132,8 +132,8 @@ body.dr #drawer{transform:none}
 #pick.show{display:flex}
 #pick .sheet{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:20px 16px 24px}
 #pick h2{margin:0 0 14px;font-size:17px}
-#pick .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-#pick .nums button{height:52px;border:1px solid #cfd4dc;border-radius:12px;background:#fff;font:700 20px "DM Sans",sans-serif;color:var(--ink)}
+#pick .nums{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+#pick .nums button{height:48px;border:1px solid #cfd4dc;border-radius:12px;background:#fff;font:700 20px "DM Sans",sans-serif;color:var(--ink)}
 #pick .nums button:active{background:var(--red);color:#fff;border-color:var(--red)}
 #pick input[type=date]{width:100%;height:44px;border:1px solid #c8cfd8;border-radius:10px;padding:0 12px;font:400 16px "DM Sans",sans-serif;margin-bottom:16px;background:#fff;color:var(--ink)}
 #pick label{display:block;font-size:13px;color:var(--ink2);margin-bottom:4px;font-weight:500}
@@ -167,7 +167,7 @@ body.dr #drawer{transform:none}
   <div class="dh"><b>Meniu</b><button id="btnClose" aria-label="Închide"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
   <nav id="nav"></nav>
 </aside>
-<div id="pick"><div class="sheet"><h2 id="ph">Alege nota (1–10)</h2><label for="pd">Data</label><input type="date" id="pd"><div class="nums" id="pn"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button></div><button class="btn okb" id="pickOk">Adaugă</button><button class="btn ghost" id="pickCancel">Anulează</button></div></div>
+<div id="pick"><div class="sheet"><h2 id="ph">Alege nota (1–11)</h2><label for="pd">Data</label><input type="date" id="pd"><div class="nums" id="pn"><button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="10">10</button><button data-n="11">11</button></div><button class="btn okb" id="pickOk">Adaugă</button><button class="btn ghost" id="pickCancel">Anulează</button></div></div>
 <div id="toast"></div>
 
 <script>
@@ -199,7 +199,7 @@ function dstr(t){var d=new Date(t),z=function(n){return(n<10?"0":"")+n};return z
 var subjIdx=-1, pickMode="n";
 function todayIso(){var d=new Date(),z=function(n){return(n<10?"0":"")+n};return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())}
 function pickT(){var v=$("pd").value||todayIso(),p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2],12,0,0).getTime()}
-function openPick(m){pickMode=m;$("ph").textContent=m==="n"?"Alege nota (1–10)":"Adaugă însemnare";$("pn").style.display=m==="n"?"":"none";$("pickOk").style.display=m==="n"?"none":"";$("pd").value=todayIso();$("pick").classList.add("show")}
+function openPick(m){pickMode=m;$("ph").textContent=m==="n"?"Alege nota (1–11)":"Adaugă însemnare";$("pn").style.display=m==="n"?"":"none";$("pickOk").style.display=m==="n"?"none":"";$("pd").value=todayIso();$("pick").classList.add("show")}
 function addG(o){o.t=pickT();o.i=Date.now()+Math.random();grades.push(o);saveG();$("pick").classList.remove("show");render()}
 var screen="home", homeTab=0, subject="", sesOpen=false;
 var $=function(id){return document.getElementById(id)};
