@@ -1,0 +1,8 @@
+*.keystore
+*.jks
+*.apk
+*.aab
+*.idsig
+*.password
+*.pass
+keystore.properties
